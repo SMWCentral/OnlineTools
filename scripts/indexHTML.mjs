@@ -1,4 +1,4 @@
-export default (tools) => `<!DOCTYPE html>
+export default (tools, escape) => `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@ export default (tools) => `<!DOCTYPE html>
         ${tools.slice().sort(
             (a, b) => a.info.name.localeCompare(b.info.name)
         ).map(
-            (tool) => `<li><a href="${tool.id}">${tool.info.name}</a></li>`).join("\n        ")
+            (tool) => `<li><a href="${escape(tool.id)}">${escape(tool.info.name)}</a></li>`).join("\n        ")
         }
     </ul>
 </body>

@@ -5,6 +5,7 @@ import url from "url";
 import Ajv from "ajv";
 import axios from "axios";
 import chalk from "chalk";
+import escape from "escape-html";
 import {minify} from "terser";
 
 import indexHTML from "./indexHTML.mjs";
@@ -44,10 +45,6 @@ async function processJS(...segments){
 
     const result = await minify(file, {toplevel: true});
     return result.code;
-}
-
-function escape(text){
-    return text.replace(/"/g, "&quot;");
 }
 
 const fetchedLibraries = new Map();
@@ -143,9 +140,9 @@ const tools = await Promise.all((await fs.readdir(path.resolve(root, "src"), {wi
 
         // Put at `index` to ensure the order stays constant
         if(dependency.type === "script"){
-            scripts[index] = `<script src="${url}" ${tail}></script>`;
+            scripts[index] = `<script src="${escape(url)}" ${tail}></script>`;
         }else{
-            styles[index] = `<link rel="stylesheet" href="${url}" ${tail} />`;
+            styles[index] = `<link rel="stylesheet" href="${escape(url)}" ${tail} />`;
         }
     }));
 
@@ -159,9 +156,9 @@ const tools = await Promise.all((await fs.readdir(path.resolve(root, "src"), {wi
                 name: info.name,
                 authors: info.authors.map((author) => author.name).sort((a, b) => a.localeCompare(b)).join(", "),
                 styles: styles.filter((item) => item != null).join("\n    "),
-                markup: `<div id="tool-${id}">${markup.trim()}</div>`,
+                markup: `<div id="tool-${escape(id)}">${markup.trim()}</div>`,
                 scripts: scripts.filter((item) => item != null).join("\n    ")
-            }))
+            }, escape))
         ]);
 
         logInfo(id, "Build successful");
@@ -195,7 +192,7 @@ await Promise.all([
             authors: tool.info.authors
         }))
     }, undefined, "    ")),
-    fs.writeFile(path.resolve(root, "dist", "index.html"), indexHTML(tools))
+    fs.writeFile(path.resolve(root, "dist", "index.html"), indexHTML(tools, escape))
 ]);
 
 logInfo("Success", `Built ${tools.length} tools in ${Date.now() - start} ms`);
