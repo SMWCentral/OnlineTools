@@ -3,9 +3,9 @@ function byte(number){
 }
 
 function doCircleTool(input, angle){
-    input = input.replaceAll("\r\n", "\n");
+    input = input.replace(/[^\r]\n/g, "\r\n");
 
-    const tableStart = input.indexOf("HorzSineTable:\n");
+    const tableStart = input.indexOf("HorzSineTable:\r\n");
 
     if(tableStart === -1){
         return {error: "Didn't find HorzSineTable: in the ASM file."};
@@ -25,8 +25,8 @@ function doCircleTool(input, angle){
         offY[i] = BigInt(Math.trunc(256 * Math.cos(angle * (Math.PI / 2) * Math.sin(i * Math.PI / 256))));
     }
 
-    const horzSineTable = ["HorzSineTable:\n"];
-    const vertSineTable = ["VertSineTable:\n"];
+    const horzSineTable = ["HorzSineTable:\r\n"];
+    const vertSineTable = ["VertSineTable:\r\n"];
 
     for(let x = 0; x < 32; x++){
         horzSineTable.push("db ");
@@ -45,8 +45,8 @@ function doCircleTool(input, angle){
             vertSineTable.push(byte(valueY), ",", byte(valueY / 256n));
         }
 
-        horzSineTable.push("\n");
-        vertSineTable.push("\n");
+        horzSineTable.push("\r\n");
+        vertSineTable.push("\r\n");
     }
 
     return {

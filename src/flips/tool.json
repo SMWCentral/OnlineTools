@@ -1,10 +1,11 @@
 {
-    "name": "Floating IPS (Flips)",
+    "name": "BPS Patcher (Flips)",
     "game": "general",
     "description": "Applies BPS patches.",
     "authors": [
         {"name": "Alcaro", "user": 1686},
-        {"name": "randomdude999", "user": 32552}
+        {"name": "randomdude999", "user": 32552},
+        {"name": "Telinc1", "user": 15661}
     ],
     "dependencies": []
 }
