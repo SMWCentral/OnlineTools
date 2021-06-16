@@ -1,0 +1,14 @@
+{
+  "name": "@smwcentral/online-tools",
+  "version": "1.0.0",
+  "description": "Online tools maintained by SMW Central.",
+  "repository": "",
+  "author": "SMWCentral",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "ajv": "^8.6.0",
+    "axios": "^0.21.1",
+    "terser": "^5.7.0"
+  }
+}
