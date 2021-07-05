@@ -1,0 +1,65 @@
+{
+    "commit": "45daee9",
+    "tools": [
+        {
+            "id": "circletool",
+            "name": "Circle Tool (Pendulum)",
+            "game": "smw",
+            "description": "Circle Tool customizes the trajectory of the [url=https://www.smwcentral.net/?p=section&s=smwsprites&f%5Bname%5D=pendulum]Pendulum[/url] sprites.",
+            "authors": [
+                {
+                    "name": "Alcaro",
+                    "user": 1686
+                },
+                {
+                    "name": "Telinc1",
+                    "user": 15661
+                }
+            ]
+        },
+        {
+            "id": "flips",
+            "name": "BPS Patcher (Flips)",
+            "game": "general",
+            "description": "Applies BPS patches.",
+            "authors": [
+                {
+                    "name": "Alcaro",
+                    "user": 1686
+                },
+                {
+                    "name": "randomdude999",
+                    "user": 32552
+                },
+                {
+                    "name": "Telinc1",
+                    "user": 15661
+                }
+            ]
+        },
+        {
+            "id": "romclean",
+            "name": "ROMclean",
+            "game": "smw",
+            "description": "This tool checks if your ROM is a clean, headered (U) [!] ROM, suitable for use here. If it's unclean, it tries to clean it.",
+            "authors": [
+                {
+                    "name": "Telinc1",
+                    "user": 15661
+                }
+            ]
+        },
+        {
+            "id": "snes_address",
+            "name": "SNES/PC Address Converter",
+            "game": "general",
+            "description": "Converts between SNES and PC addresses.",
+            "authors": [
+                {
+                    "name": "Telinc1",
+                    "user": 15661
+                }
+            ]
+        }
+    ]
+}

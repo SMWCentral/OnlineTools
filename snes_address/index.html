@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SNES/PC Address Converter - Online Tools - SMW Central</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Telinc1">
+    
+</head>
+<body>
+    <div id="tool-snes_address"><style>
+    td {
+        padding: 2px;
+    }
+
+    td.space {
+        height: 0.75em;
+    }
+
+    .invalid {
+        font-style: italic;
+    }
+</style>
+
+<table x-data="{ address: { snes: 0x008000, pc: 0x0, region: 'ROM' }, toPC: true, offset: 512, snestopc: convertLoROMToPC, pctosnes: convertPCToLoROM }">
+    <tbody>
+        <!--
+        <tr>
+            <td colspan="2">Mode</td>
+            <td>
+                <label><input type="radio" name="mode" checked> LoROM</label>
+                <label><input type="radio" name="mode"> SA-1</label>
+            </td>
+        </tr>
+        -->
+        <tr>
+            <td colspan="2">SMC Header</td>
+            <td><input
+                type="checkbox"
+                :checked="(offset === 512)"
+                @change="if(!toPC && address.region === 'ROM') { if($event.target.checked) { address = pctosnes(address.pc - 512); } else { address = pctosnes(address.pc + 512); } } offset = ($event.target.checked) ? 512 : 0;"
+            ></td>
+        </tr>
+        <tr>
+            <td colspan="3" class="space"></td>
+        </tr>
+        <tr>
+            <td><input id="snes" type="text" @change="address = snestopc(fromHex($event.target.value, 0)); toPC = true;" :value="toHex(address.snes)"></td>
+            <td x-text="(address.region === 'ROM') ? ((toPC) ? '&gt;' : '&lt;') : '&nbsp;'" style="font-family: monospace;"></td>
+            <td><input id="pc" type="text" @change="address = pctosnes(fromHex($event.target.value, 0) - offset); toPC = false;" :value="(address.region === 'ROM') ? toHex(address.pc + offset) : 'N/A'"></td>
+        </tr>
+        <tr>
+            <td><label for="snes" x-text="`SNES Address (${address.region})`" :class="(address.region === 'ROM') || 'invalid'"></label></td>
+            <td></td>
+            <td><label for="pc">PC File Address</label></td>
+        </tr>
+    </tbody>
+</table></div>
+    
+    <script type="module">
+        import {run} from "../api.js";
+        import tool from "./index.js";
+
+        run("snes_address", tool);
+    </script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.2.1/cdn.min.js" integrity="sha512-6W+GlrV+mX4hcspaL8830mcCU42F4141eECFcSvGc7ZjhLHjGDLOv4NhbNKikXmVk3klci3uJkCE4378FUWSEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+</html>
