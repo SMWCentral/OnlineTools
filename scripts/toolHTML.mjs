@@ -1,4 +1,4 @@
-export default ({id, name, authors, styles, markup, scripts}, escape) => `<!DOCTYPE html>
+export default ({id, name, authors, styles, markup, scripts, lateScripts}, escape) => `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,6 +16,7 @@ export default ({id, name, authors, styles, markup, scripts}, escape) => `<!DOCT
 
         run(${JSON.stringify(id)}, tool);
     </script>
+    ${lateScripts}
 </body>
 </html>
 `;

@@ -110,8 +110,9 @@ const tools = await Promise.all((await fs.readdir(path.resolve(root, "src"), {wi
         logFatal(id, `Couldn't process index.js: ${error.stack}`);
     }
 
-    const styles = [];
     const scripts = [];
+    const lateScripts = [];
+    const styles = [];
 
     await Promise.all(info.dependencies.map(async (dependency, index) => {
         const library = `${dependency.library}/${dependency.version}`;
@@ -139,10 +140,18 @@ const tools = await Promise.all((await fs.readdir(path.resolve(root, "src"), {wi
         const tail = `integrity="${escape(data.sri[dependency.file])}" crossorigin="anonymous" referrerpolicy="no-referrer"`;
 
         // Put at `index` to ensure the order stays constant
-        if(dependency.type === "script"){
-            scripts[index] = `<script src="${escape(url)}" ${tail}></script>`;
-        }else{
-            styles[index] = `<link rel="stylesheet" href="${escape(url)}" ${tail} />`;
+        switch(dependency.type){
+            case "script":
+                if(dependency.late){
+                    lateScripts[index] = `<script defer src="${escape(url)}" ${tail}></script>`;
+                }else{
+                    scripts[index] = `<script src="${escape(url)}" ${tail}></script>`;
+                }
+
+                break;
+            case "style":
+                styles[index] = `<link rel="stylesheet" href="${escape(url)}" ${tail} />`;
+                break;
         }
     }));
 
@@ -157,7 +166,8 @@ const tools = await Promise.all((await fs.readdir(path.resolve(root, "src"), {wi
                 authors: info.authors.map((author) => author.name).sort((a, b) => a.localeCompare(b)).join(", "),
                 styles: styles.filter((item) => item != null).join("\n    "),
                 markup: `<div id="tool-${escape(id)}">${markup.trim()}</div>`,
-                scripts: scripts.filter((item) => item != null).join("\n    ")
+                scripts: scripts.filter((item) => item != null).join("\n    "),
+                lateScripts: lateScripts.filter((item) => item != null).join("\n    ")
             }, escape))
         ]);
 

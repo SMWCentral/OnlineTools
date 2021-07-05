@@ -17,7 +17,8 @@
             "type": "script",
             "library": "Library name from cdnjs",
             "version": "Version",
-            "file": "File name (JS)"
+            "file": "File name (JS)",
+            "late": false
         }
     ]
 }

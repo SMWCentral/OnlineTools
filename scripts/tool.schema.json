@@ -56,7 +56,11 @@
                 },
                 "library": {"type": "string"},
                 "version": {"type": "string"},
-                "file": {"type": "string"}
+                "file": {"type": "string"},
+                "late": {
+                    "description": "For scripts: Load before the tool code, or after the tool has run?",
+                    "type": "boolean"
+                }
             },
             "additionalProperties": false
         }
