@@ -34,8 +34,8 @@ $ npm run build-dev # build without minifying source code
 
 ### Playground
 You can develop tools in CodePen and JSFiddle. Start from a template:
-- CodePen
-- JSFiddle
+- [CodePen](https://codepen.io/telinc1/pen/LYyGyye)
+- [JSFiddle](https://jsfiddle.net/Telinc1/2hcuv7L8/)
 
 Both templates define a function called `tool` which correponds to the default export of a tool's `index.js` file.
 
