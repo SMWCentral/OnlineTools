@@ -1,6 +1,8 @@
+import {execSync} from "child_process";
 import fs from "fs/promises";
 import path from "path";
 import url from "url";
+import {promisify} from "util";
 
 import Ajv from "ajv";
 import axios from "axios";
@@ -191,9 +193,19 @@ logInfo("api.js", "Processed successfully");
 // Create index files (`index.html` and `online_tools.json`)
 logInfo("Writing indexes");
 
+let commit = "main";
+
+if(String(execSync("git status --porcelain")).length === 0){
+    // Working directory clean - point to last commit
+    commit = String(execSync("git rev-parse --short HEAD")).trim();
+}else{
+    // Uncommitted changes - point to current branch
+    commit = String(execSync("git rev-parse --abbrev-ref HEAD")).trim();
+}
+
 await Promise.all([
     fs.writeFile(path.resolve(root, "dist", "online_tools.json"), JSON.stringify({
-        commit: null,
+        commit,
         tools: tools.map((tool) => ({
             id: tool.id,
             name: tool.info.name,
