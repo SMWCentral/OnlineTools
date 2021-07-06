@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>.pal Generator - Online Tools - SMW Central</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="WhiteYoshiEgg">
+    
+</head>
+<body>
+    <div id="tool-pal_generator"><style>
+    #preview {
+        display: block;
+        margin-top: 0.5em;
+        width: 256px;
+        height: 256px;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        image-rendering: pixelated;
+    }
+</style>
+
+<div><label for="file">Screenshot of Lunar Magic's palette editor: </label><input type="file" id="file" accept="image/*"></div>
+<div>Press Ctrl+V to paste an image from your clipboard.</div>
+<div id="status"></div>
+<div id="output" style="display: none;">
+    <hr>
+    <button id="download">Download .PAL</button>
+    <canvas id="preview" width="16" height="16"></canvas>
+</div></div>
+    
+    <script type="module">
+        import {run} from "../api.js";
+        import tool from "./index.js";
+
+        run("pal_generator", tool);
+    </script>
+    
+</body>
+</html>
