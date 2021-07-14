@@ -146,7 +146,8 @@ class WordTuple {
 
 Object.freeze(WordType);
 
-function decStringToHexString(str) {
+function normalizeHexStringToHexString(str) {
+    // this seems rather useless (and it may be) but it ensures consitency
     return parseInt(str, 16).toString(16).toUpperCase();
 }
 
@@ -198,7 +199,7 @@ function process_word(word, index, splitted, comma_index, messages) {
         return [word, bwram_define_needed, converted, requires_manual_conversion];
 
     if (sprite_addr_list.indexOf(numeric_word) !== -1) {
-        word = '!' + (add_dp ? `${decStringToHexString(word)}|!dp` : `${decStringToHexString(word)}`);
+        word = '!' + (add_dp ? `${normalizeHexStringToHexString(word)}|!dp` : `${normalizeHexStringToHexString(word)}`);
     } else if (word.length === 6 && (0x000000 <= numeric_word <= 0x0FFFFF)) {
         word = '$' + word + '|!bank';
     } else if (word.length === 6 && (0x7E0000 <= numeric_word <= 0x7E1FFF)) {
@@ -278,7 +279,7 @@ function convert(input) {
             if (in_comment || in_data) { }
             else if (stripped_word[0] === ';') {
                 in_comment = true;
-            } else if (data_types.map(x => x === stripped_word).some(x => x)) {
+            } else if (data_types.some(x => x === stripped_word)) {
                 in_data = true;
             } else if (stripped_word.startsWith('PEA') || stripped_word.startsWith('PER')) {
                 ignore_next_address = true;
