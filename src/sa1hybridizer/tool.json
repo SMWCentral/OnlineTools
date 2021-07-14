@@ -1,0 +1,9 @@
+{
+    "name": "SA1 Hybridizer",
+    "game": "smw",
+    "description": "A tool that makes lorom asm files compatible with both lorom and SA-1",
+    "authors": [
+        {"name": "Atari2.0", "user": 35033}
+    ],
+    "dependencies": []
+}
