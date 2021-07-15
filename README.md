@@ -45,7 +45,7 @@ In order to run an existing tool in a playground:
 - If you rename the `tool` function, update the reference to it in the call to `runInPlayground(tool)`.
 - Some tools may have dependencies specified in their `tool.json`. They have to be manually added to the playground.
 
-The same steps can be done in reverse to transfer a tool from thea playground to this repository.
+The same steps can be done in reverse to transfer a tool from the playground to this repository.
 
 ## Guidelines for new tools
 - Make sure your tool is convenient for online use. Tools with a lot of inputs or outputs, tools that need to perform heavy computation, and tools that need to store persistent state are generally not usable online.
