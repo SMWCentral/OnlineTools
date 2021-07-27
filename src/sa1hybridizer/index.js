@@ -147,32 +147,32 @@ class WordTuple {
 Object.freeze(WordType);
 
 function normalizeHexStringToHexString(str) {
-    // this seems rather useless (and it may be) but it ensures consitency
+    // this seems rather useless (and it may be) but it ensures consitency (kills whitespace, makes it all capital, fixes weird formats, etc..)
     return parseInt(str, 16).toString(16).toUpperCase();
 }
 
 function check_bwram(word) {
-    let bwram_word = parseInt(word, 16)
-    let bwram_remapped_list = [0x7F9A7B, 0x7027FF]          // Wiggler's segment buffer, Expansion area planned for SMW hacks
-    let map16_lo_by = [0x7EC800, 0x7EFFFF]                // Map16 low byte plus Overworld related data.
-    let map16_hi_by = [0x7FC800, 0x7FFFFF]                // Map16 high byte.
-    let save_mem = [0x700000, 0x7007FF]                // Original save memory (2 kB big). Not everything is used
-    let bwram_list = [map16_lo_by, map16_hi_by, save_mem]
+    let bwram_word = parseInt(word, 16);
+    let bwram_remapped_list = [0x7F9A7B, 0x7027FF];          // Wiggler's segment buffer, Expansion area planned for SMW hacks
+    let map16_lo_by = [0x7EC800, 0x7EFFFF];                // Map16 low byte plus Overworld related data.
+    let map16_hi_by = [0x7FC800, 0x7FFFFF];                // Map16 high byte.
+    let save_mem = [0x700000, 0x7007FF];                // Original save memory (2 kB big). Not everything is used
+    let bwram_list = [map16_lo_by, map16_hi_by, save_mem];
     let bwram_indexes = bwram_list.map(x => {
         let [b, e] = x;
-        return b <= bwram_word <= e;
+        return b <= bwram_word && bwram_word <= e;
     });
-    let subs = ['map16_lo_by', 'map16_hi_by', 'save_mem']
+    let subs = ['map16_lo_by', 'map16_hi_by', 'save_mem'];
     if (bwram_indexes.some(x => x)) {
-        let true_index = bwram_indexes.indexOf(True)
-        let sub = `${bwram_word.toString(16).toUpperCase().padStart(6, '0')}&$00FFFF|!${subs[true_index]}`
-        return [sub, true]
+        let true_index = bwram_indexes.indexOf(true);
+        let sub = `${bwram_word.toString(16).toUpperCase().padStart(6, '0')}&$00FFFF|!${subs[true_index]}`;
+        return [sub, true];
     }
     else if (bwram_word in bwram_remapped_list) {
-        let sub = `!${bwram_word.toString(16).toUpperCase().padStart(6, '0')}`
-        return [sub, true]
+        let sub = `!${bwram_word.toString(16).toUpperCase().padStart(6, '0')}`;
+        return [sub, true];
     }
-    return [word, false]
+    return [word, false];
 }
 
 function process_word(word, index, splitted, comma_index, messages) {
@@ -186,15 +186,13 @@ function process_word(word, index, splitted, comma_index, messages) {
     if (word.startsWith('8') && word.length == 6) {
         word = word.replace('8', '0', 1);
     }
-    let numeric_word = undefined;
-    try {
-        numeric_word = parseInt(word, 16);
-    } catch (err) {
-        throw err;
+    let numeric_word = parseInt(word, 16);
+    if (Number.isNaN(numeric_word)) {
+        throw `Error during parsing of address ${word}`;
     }
     let bwram_define_needed = false;
     if (word.length === 6)
-        word, bwram_define_needed = check_bwram(word);
+        [word, bwram_define_needed] = check_bwram(word);
     if (bwram_define_needed)
         return [word, bwram_define_needed, converted, requires_manual_conversion];
 
@@ -268,7 +266,7 @@ function convert(input) {
                      a ram address leave it alone\n`);
                 }
             }
-            outlines[index] = line.trimStart();
+            outlines[index] = line.trimEnd();
             continue;
         }
         let ignore_next_address = false;
@@ -295,12 +293,12 @@ function convert(input) {
                 let word_tuples = []
                 for (let [i, word] of splitted.entries()) {
                     if (word.startsWith('$')) {
-                        try {
-                            let proc_word = parseInt(eval_stmt(word.replace('$', '0x')));
+                        let proc_word = parseInt(eval_stmt(word.replace('$', '0x')));
+                        if (Number.isNaN(proc_word)) {
                             let expr = word.replace('$', '').split(/[+\\\-^*~<>|]/);
                             word = `$${proc_word.toString(16).toUpperCase().padStart(Math.max(...expr.map((e) => e.length)), "0")}`;
                             word_tuples.push(new WordTuple(WordType.ADDR, word, i));
-                        } catch {
+                        } else {
                             let bunch = word.split(/([+\-^*~<>| ])/);
                             for (let w of bunch) {
                                 if (w.startsWith('$'))
@@ -321,12 +319,10 @@ function convert(input) {
                     let i = struct.index;
                     if (wordtype === WordType.ADDR) {
                         try {
-                            let comma_index;
-                            try {
-                                comma_index = word_tuples[i + 1][0] === WordType.COMMA ? i + 1 : -1;
-                            } catch {
-                                comma_index = -1;
-                            }
+                            let current_tuple = word_tuples[i + 1];
+                            let comma_index = -1;
+                            if (current_tuple !== undefined)
+                                comma_index = current_tuple.type === WordType.COMMA ? i + 1 : -1;
                             let [ww, bwram_define_needed, converted, manual_conversion] = process_word(word.replace('$', ''), index, splitted, comma_index, messages);
                             if (manual_conversion)
                                 requires_manual_conversion = true;
@@ -344,7 +340,7 @@ function convert(input) {
                     }
                 }
             }
-            outlines[index] += to_insert !== '' ? to_insert : og_word;
+            outlines[index] += to_insert.length !== 0 ? to_insert : og_word;
         }
     }
     if (bw_defs.some(x => x)) {
