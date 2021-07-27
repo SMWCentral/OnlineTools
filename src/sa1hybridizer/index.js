@@ -151,6 +151,11 @@ function normalizeHexStringToHexString(str) {
     return parseInt(str, 16).toString(16).toUpperCase();
 }
 
+// inclusive range check
+function checkRange(value, begin, end) {
+    return value >= begin && value <= end;
+}
+
 function check_bwram(word) {
     let bwram_word = parseInt(word, 16);
     let bwram_remapped_list = [0x7F9A7B, 0x7027FF];          // Wiggler's segment buffer, Expansion area planned for SMW hacks
@@ -160,7 +165,7 @@ function check_bwram(word) {
     let bwram_list = [map16_lo_by, map16_hi_by, save_mem];
     let bwram_indexes = bwram_list.map(x => {
         let [b, e] = x;
-        return b <= bwram_word && bwram_word <= e;
+        return checkRange(bwram_word, b, e);
     });
     let subs = ['map16_lo_by', 'map16_hi_by', 'save_mem'];
     if (bwram_indexes.some(x => x)) {
@@ -198,9 +203,9 @@ function process_word(word, index, splitted, comma_index, messages) {
 
     if (sprite_addr_list.indexOf(numeric_word) !== -1) {
         word = '!' + (add_dp ? `${normalizeHexStringToHexString(word)}|!dp` : `${normalizeHexStringToHexString(word)}`);
-    } else if (word.length === 6 && (0x000000 <= numeric_word <= 0x0FFFFF)) {
+    } else if (word.length === 6 && checkRange(numeric_word, 0x000000, 0x0FFFFF)) {
         word = '$' + word + '|!bank';
-    } else if (word.length === 6 && (0x7E0000 <= numeric_word <= 0x7E1FFF)) {
+    } else if (word.length === 6 && checkRange(numeric_word, 0x7E0000, 0x7E1FFF)) {
         try {
             let short_word = word.substring(2);
             let spr_index = sprite_addr_list.indexOf(parseInt(short_word, 16));
@@ -211,9 +216,9 @@ function process_word(word, index, splitted, comma_index, messages) {
     } else if (word.length === 2) {
         converted = false;
         word = '$' + word;
-    } else if (0x0100 <= numeric_word <= 0x1FFF) {
+    } else if (checkRange(numeric_word, 0x0100, 0x1FFF)) {
         word = '$' + word + '|!addr';
-    } else if (0x0000 <= numeric_word <= 0x00FF) {
+    } else if (checkRange(numeric_word, 0x0000, 0x00FF)) {
         word = '$' + word + '|!dp';
     } else {
         converted = false;
@@ -260,7 +265,7 @@ function convert(input) {
                     address, usually replacing the $ with ! works in most tools, it didn't get
                     converted automatically because it might not be necessary to do so, make sure
                     to convert manually it ONLY if needed.\n`)
-                } else if (0x0100 <= addr <= 0x1FFF) {
+                } else if (checkRange(addr, 0x0100, 0x1FFF)) {
                     messages.push(`There is define ${define_found[0]} at line ${index + 1} which might be a ram
                      address, if it is, convert it by adding |!addr at the end of it, if it's not
                      a ram address leave it alone\n`);
