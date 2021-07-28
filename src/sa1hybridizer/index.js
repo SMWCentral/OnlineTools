@@ -248,7 +248,7 @@ function convert(input) {
         let in_data = false;
         let reg = /![A-Za-z\d_]+\s+=\s+((\$)?[\dA-Fa-f]{2,6})\S*/;
         let define_found = line.match(reg);
-        let words = line.trim().split(/([ \t;])/);
+        let words = line.trimEnd().split(/([ \t;])/);
         if (line.trim() === "" || line.trimStart().startsWith(';') || define_found) {
             if (define_found) {
                 requires_manual_conversion = true;
@@ -291,7 +291,7 @@ function convert(input) {
             } else if (/\$[^, \n()\[\]]{1,6}/.exec(og_word) !== null) {
                 if (ignore_next_address) {
                     ignore_next_address = false;
-                    outlines[index - 1] += og_word;
+                    outlines[index] += og_word;
                     continue;
                 }
                 let splitted = og_word.split(/([\[\](), ])/);
