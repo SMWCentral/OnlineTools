@@ -1,5 +1,5 @@
 {
-    "commit": "03fef3b",
+    "commit": "56b6f19",
     "tools": [
         {
             "id": "circletool",
@@ -70,6 +70,18 @@
                 {
                     "name": "Telinc1",
                     "user": 15661
+                }
+            ]
+        },
+        {
+            "id": "sa1hybridizer",
+            "name": "SA1 Hybridizer",
+            "game": "smw",
+            "description": "Attempts to make LoROM ASM files compatible with both LoROM and SA-1.",
+            "authors": [
+                {
+                    "name": "Atari2.0",
+                    "user": 35033
                 }
             ]
         },

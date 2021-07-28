@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SA1 Hybridizer - Online Tools - SMW Central</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Atari2.0">
+    
+</head>
+<body>
+    <div id="tool-sa1hybridizer"><div><label for="file">File: </label><input type="file" id="file" accept=".asm"></div>
+<div><button id="generate">Generate</button></div></div>
+    
+    <script type="module">
+        import {run} from "../api.js";
+        import tool from "./index.js";
+
+        run("sa1hybridizer", tool);
+    </script>
+    
+</body>
+</html>
