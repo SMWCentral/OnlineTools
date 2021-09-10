@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drum Fixer - Online Tools - SMW Central</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="tcdw">
+    
+</head>
+<body>
+    <div id="tool-drum_fixer"><style>
+    #note_data {
+        resize: none; min-width: 500px; height: 60vh; max-height: 300px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace
+    }
+</style>
+
+<div>
+    <h1>Drum Fixer</h1>
+    <hr>
+    <textarea id="note_data">o4c4d4e4g+4d4&lt;c4f4&gt;&gt;g4a+4</textarea><br><button id="make_btn">Fix!</button>
+    <h2>About</h2>
+    <p>In GM standard MIDI files, channel 10 is reserved for percussion instruments only. Notes recorded on channel 10 always produce percussion sounds when transmitted to a keyboard or synth module which uses the GM standard. (via <a href="https://en.wikipedia.org/wiki/General_MIDI">WikiPedia</a>)</p>
+    <p>However, the sound driver of AddMusicK / AddMusicM do not have such feature. If you convert a song from MIDI, you have to define different instrument and other channel values to make it work.</p>
+    <p>I wrote this mini tool to solve such issues. It scans all of notes in various pitch, then replace with fitting labels. Now, it can be dealed quickly.</p>
+    <h2>Notice</h2>
+    <ul>
+    <li>A channel of percussion MML just converted from a MIDI should be inputed.</li>
+    <li><strong>Be aware this tool DO NOT deal with comments and other commands!</strong></li>
+    </ul>
+</div></div>
+    
+    <script type="module">
+        import {run} from "../api.js";
+        import tool from "./index.js";
+
+        run("drum_fixer", tool);
+    </script>
+    
+</body>
+</html>

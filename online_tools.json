@@ -1,5 +1,5 @@
 {
-    "commit": "56b6f19",
+    "commit": "cb11ad4",
     "tools": [
         {
             "id": "circletool",
@@ -14,6 +14,18 @@
                 {
                     "name": "Telinc1",
                     "user": 15661
+                }
+            ]
+        },
+        {
+            "id": "drum_fixer",
+            "name": "Drum Fixer",
+            "game": "smw",
+            "description": "This tool convert each note in MML into labels, which is helpful for dealing with percussion channels.",
+            "authors": [
+                {
+                    "name": "tcdw",
+                    "user": 17572
                 }
             ]
         },
