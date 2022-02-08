@@ -8,6 +8,8 @@ function read(view, index, length){
     return bytes;
 }
 
+// See ".map16 File Format" under Technical Information
+// in the Lunar Magic help file.
 function readMap16(file){
     const view = new DataView(file);
 
@@ -20,10 +22,27 @@ function readMap16(file){
 
     const width = view.getUint32(0x18, true);
 	const height = view.getUint32(0x1C, true);
-	const topLeftTile = 16 * view.getUint32(0x24, true) + view.getUint32(0x20, true);
-	const tableLoc = view.getUint32(16, true);
+	const tableLoc = view.getUint32(0x10, true);
 	const tileDataLoc = view.getUint32(tableLoc, true);
-	const actsLikeLoc = view.getUint32(tableLoc + 8, true);
+	const actsLikeLoc = view.getUint32(tableLoc + 0x08, true);
+
+	let topLeftTile = 0x10 * view.getUint32(0x24, true) + view.getUint32(0x20, true);
+
+    const coordBase = view.getUint8(0x28);
+
+    if(coordBase === 0x00 && topLeftTile >= 0x4000){
+        // 0x00: retain backwards compatibility with old .map16 files.
+        // Tiles on pages 0x00-0x3F are stored directly,
+        // while pages 0x80-0xFF are stored as 0x40-0x7F.
+        topLeftTile += 0x4000;
+    }else if(coordBase === 0x08){
+        // 0x08: appears to only be used when exporting from pages 0xC0-0xFF
+        // Tiles are stored offset by 0x8000.
+        topLeftTile += 0x8000;
+    }
+
+    // Coordinate base 0x04 is used when exporting from 0x40-0x7F and doesn't
+    // need special handling.
 
 	for(let i = 0; i < width * height; i += 1){
 		const row = Math.floor(i / width);
@@ -34,7 +53,7 @@ function readMap16(file){
 
         let actsLike;
 
-		if(tile >= 0x4000){
+		if(tile >= 0x8000){
             // background tiles have no "acts like" settings,
             // they get a dummy value so we don't compare FG with BG tiles
 			actsLike = "bg";
