@@ -230,7 +230,11 @@ function process_word(word, index, splitted, comma_index, messages) {
 }
 
 function eval_stmt(string) {
-    return (new Function('return (' + string + ')')());
+    try {
+        return (new Function('return (' + string + ')')());
+    } catch (err) {
+        return NaN;
+    }
 }
 
 function convert(input) {
@@ -299,7 +303,7 @@ function convert(input) {
                 for (let [i, word] of splitted.entries()) {
                     if (word.startsWith('$')) {
                         let proc_word = parseInt(eval_stmt(word.replace('$', '0x')));
-                        if (Number.isNaN(proc_word)) {
+                        if (!Number.isNaN(proc_word)) {
                             let expr = word.replace('$', '').split(/[+\\\-^*~<>|]/);
                             word = `$${proc_word.toString(16).toUpperCase().padStart(Math.max(...expr.map((e) => e.length)), "0")}`;
                             word_tuples.push(new WordTuple(WordType.ADDR, word, i));
