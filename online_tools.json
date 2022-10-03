@@ -1,6 +1,26 @@
 {
-    "commit": "3d08a9b",
+    "commit": "81fa4ad",
     "tools": [
+        {
+            "id": "bps",
+            "name": "BPS Patcher (Flips alternative)",
+            "game": "general",
+            "description": "Applies BPS patches.",
+            "authors": [
+                {
+                    "name": "Alcaro",
+                    "user": 1686
+                },
+                {
+                    "name": "randomdude999",
+                    "user": 32552
+                },
+                {
+                    "name": "Telinc1",
+                    "user": 15661
+                }
+            ]
+        },
         {
             "id": "circletool",
             "name": "Circle Tool (Pendulum)",
@@ -38,26 +58,6 @@
                 {
                     "name": "WhiteYoshiEgg",
                     "user": 951
-                }
-            ]
-        },
-        {
-            "id": "flips",
-            "name": "BPS Patcher (Flips)",
-            "game": "general",
-            "description": "Applies BPS patches.",
-            "authors": [
-                {
-                    "name": "Alcaro",
-                    "user": 1686
-                },
-                {
-                    "name": "randomdude999",
-                    "user": 32552
-                },
-                {
-                    "name": "Telinc1",
-                    "user": 15661
                 }
             ]
         },

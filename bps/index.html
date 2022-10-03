@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BPS Patcher (Flips) - Online Tools - SMW Central</title>
+    <title>BPS Patcher (Flips alternative) - Online Tools - SMW Central</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Alcaro, randomdude999, Telinc1">
     
 </head>
 <body>
-    <div id="tool-flips"><div><label for="file">Base ROM: </label><input type="file" id="rom"></div>
+    <div id="tool-bps"><div><label for="file">Base ROM: </label><input type="file" id="rom"></div>
 <div><label for="file">Patch: </label><input type="file" id="patch" accept=".bps"></div>
 <div><button id="button">Apply Patch</button></div></div>
     
@@ -16,7 +16,7 @@
         import {run} from "../api.js";
         import tool from "./index.js";
 
-        run("flips", tool);
+        run("bps", tool);
     </script>
     
 </body>
