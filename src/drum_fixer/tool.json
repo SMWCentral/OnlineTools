@@ -10,7 +10,7 @@
             "type": "script",
             "library": "vue",
             "version": "3.3.4",
-            "file": "vue.global.js"
+            "file": "vue.global.prod.js"
         }
     ]
 }

@@ -193,6 +193,8 @@ const SecondStep = defineComponent({
         }
     },
     template: `
+        <p>(Optional) You can set label name for each note here. Each label name should begin or end with UPPERCASE letter.</p>
+        <p>If not needed, just select <strong>Next Step</strong>.</p>
         <table>
             <thead>
                 <tr>
