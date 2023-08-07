@@ -74,6 +74,12 @@ function doWalk(data) {
                 walked += 1;
                 break;
             }
+            case 'q':
+            case '$': {
+                applyChar(data.slice(walked, walked + 3));
+                walked += 3;
+                break;
+            }
             default: {
                 applyChar(data[walked]);
                 walked += 1;
