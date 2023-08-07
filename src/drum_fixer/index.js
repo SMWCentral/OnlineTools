@@ -97,18 +97,27 @@ function doWalk(data) {
 }
 
 function toFixedMML(builtDataSet, label) {
-    let data = "";
+    let data = `; Note: All labels suffixed with _R means repeated drum note.
+; Thus, you don't need to redefine instrument, volume, octave, etc. on labels suffixed with _R, which helps saving insert size.
+
+`;
 
     // apply label define
     label.forEach((e) => {
-        data += `"${e.label}=o4 c"\n`
+        data += `"${e.label}=o4 @0 c"\n`
+        data += `"${e.label}_R=c"\n`
     })
     data += "\n"
 
     // apply notes
+    let prevNote = null;
     builtDataSet.forEach((e) => {
         if (typeof e === "number") {
             data += label.find((f) => f.value === e)?.label;
+            if (prevNote === e) {
+                data += "_R";
+            }
+            prevNote = e;
             return;
         }
         data += e;
