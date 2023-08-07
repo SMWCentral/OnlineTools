@@ -90,6 +90,27 @@ function doWalk(data) {
     return { builtDataSet, builtLabel };
 }
 
+function toFixedMML(builtDataSet, label) {
+    let data = "";
+
+    // apply label define
+    label.forEach((e) => {
+        data += `"${e.label}=o4 c"\n`
+    })
+    data += "\n"
+
+    // apply notes
+    builtDataSet.forEach((e) => {
+        if (typeof e === "number") {
+            data += label.find((f) => f.value === e)?.label;
+            return;
+        }
+        data += e;
+    })
+
+    return data;
+}
+
 /**
  * @param {number} id 
  */
@@ -160,7 +181,9 @@ const SecondStep = defineComponent({
             globalInfo.step = 1;
         }
 
-        function handleNextStep() {}
+        function handleNextStep() {
+            globalInfo.step = 3;
+        }
 
         return {
             globalInfo,
@@ -192,12 +215,41 @@ const SecondStep = defineComponent({
 })
 
 // ================================================================================================
+// First step form
+const ThirdStep = defineComponent({
+    name: "ThirdStep",
+    setup() {
+        const result = ref(toFixedMML(globalInfo.rawResults.builtDataSet, globalInfo.label));
+
+        function handleFixAnother() {
+            globalInfo.step = 1;
+        }
+
+        return {
+            globalInfo,
+            result,
+            handleFixAnother,
+        }
+    },
+    template: `
+        <form @submit.prevent="handleFixAnother" target="#">
+            <label for="note-data" style="display: block; margin-bottom: 0.5rem">Here is your fixed Note Data for drum:</label>
+            <textarea id="note-data" v-model="result" style="display: block; resize: vertical; width: 100%; min-height: 250px; margin-bottom: 0.5rem" />
+            <div style="display: flex; justify-content: flex-start">
+                <button type="submit">Fix Another</button>
+            </div>
+        </form>
+    `
+})
+
+// ================================================================================================
 // Init program
 export default function() {
     createApp({
         components: {
             FirstStep,
             SecondStep,
+            ThirdStep,
         },
         setup() {
             return {
@@ -207,6 +259,7 @@ export default function() {
         template: `
             <first-step v-if="globalInfo.step === 1"></first-step>
             <second-step v-if="globalInfo.step === 2"></second-step>
+            <third-step v-if="globalInfo.step === 3"></third-step>
         `
     }).mount('#drum-fixer-main')
 }
