@@ -5,5 +5,12 @@
     "authors": [
         {"name": "tcdw", "user": 17572}
     ],
-    "dependencies": []
+    "dependencies": [
+        {
+            "type": "script",
+            "library": "vue",
+            "version": "3.3.4",
+            "file": "vue.global.js"
+        }
+    ]
 }
