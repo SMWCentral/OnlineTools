@@ -108,7 +108,8 @@ function doWalk(data, options) {
 function toFixedMML(builtDataSet, label) {
     let data = `; Note: All labels suffixed with _R means repeated drum note.
 ; Thus, you don't need to redefine instrument, volume, octave, etc. on labels suffixed with _R, which helps saving insert size.
-; Though if you want to use vanilla percussion (@21 - @29), you still have to. See https://smwc.me/1505080 for more details.
+; Though if you want to use vanilla percussion (@21 - @29), you still have to redefine percussion (volume and others are still not required).
+; See https://smwc.me/1505080 for more details.
 
 `;
 
