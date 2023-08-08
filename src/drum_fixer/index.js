@@ -12,11 +12,17 @@ const notePitch = {
 }
 
 /**
+ * @typedef {Object} DoWalkOptions
+ * @property {boolean | undefined} sort
+ */
+
+/**
  * Convert MML
  * @param {string} data MML data
+ * @param {DoWalkOptions} options
  * @returns 
  */
-function doWalk(data) {
+function doWalk(data, options) {
     const walkLength = data.length;
     /**
      * @type {Set<number>}
@@ -87,12 +93,15 @@ function doWalk(data) {
             }
         }
     }
-    const builtLabel = [...allLabel].sort((a, b) => {
-        if (a > b) {
-            return 1
-        }
-        return -1
-    })
+    const builtLabel = [...allLabel]
+    if (options.sort) {
+        builtLabel.sort((a, b) => {
+            if (a > b) {
+                return 1
+            }
+            return -1
+        })
+    }
     return { builtDataSet, builtLabel };
 }
 
@@ -139,6 +148,9 @@ function idToNoteName(id) {
 // Building interface
 const { createApp, defineComponent, ref, reactive } = Vue
 
+// todo: in the future when OnlineTools fully support native ESM, use this instead (at top of the file):
+// import { createApp, defineComponent, ref, reactive } from "vue"
+
 // ================================================================================================
 // Shared global info
 const globalInfo = reactive({
@@ -163,8 +175,12 @@ f4f4f4f4`,
 const FirstStep = defineComponent({
     name: "FirstStep",
     setup() {
+        const sortMode = ref(/** @typedef sortMode "appear" | "pitch" */ "appear");
+
         function handleSubmit() {
-            globalInfo.rawResults = doWalk(globalInfo.noteData);
+            globalInfo.rawResults = doWalk(globalInfo.noteData, {
+                sort: sortMode.value === "pitch"
+            });
             globalInfo.label = globalInfo.rawResults.builtLabel.map((e) => ({
                 label: `PERC${String(e).padStart(2, "0")}X`,
                 value: e,
@@ -175,12 +191,24 @@ const FirstStep = defineComponent({
         return {
             globalInfo,
             handleSubmit,
+            sortMode,
         }
     },
     template: `
         <form @submit.prevent="handleSubmit" target="#">
             <label for="note-data" style="display: block; margin-bottom: 0.5rem">Note Data:</label>
             <textarea id="note-data" v-model="globalInfo.noteData" style="display: block; resize: vertical; width: 100%; min-height: 250px; margin-bottom: 0.5rem" />
+            <fieldset>
+                <legend>How do we sort labels representing drum notes?</legend>
+                <div>
+                    <input type="radio" id="sort-by-appearing" value="appear" v-model="sortMode" />
+                    <label for="sort-by-appearing">By when they appears</label>
+                </div>
+                <div>
+                    <input type="radio" id="sort-by-pitch" value="pitch" v-model="sortMode" />
+                    <label for="sort-by-pitch">By octave and pitch</label>
+                </div>
+            </fieldset>
             <div style="display: flex; justify-content: flex-end">
                 <button type="submit">Next Step</button>
             </div>
