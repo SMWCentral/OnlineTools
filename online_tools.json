@@ -1,5 +1,5 @@
 {
-    "commit": "81fa4ad",
+    "commit": "4be7f75",
     "tools": [
         {
             "id": "bps",
@@ -44,7 +44,7 @@
             "description": "This tool convert each note in MML into labels, which is helpful for dealing with percussion channels.",
             "authors": [
                 {
-                    "name": "tcdw",
+                    "name": "Nanako",
                     "user": 17572
                 }
             ]

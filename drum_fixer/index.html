@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <title>Drum Fixer - Online Tools - SMW Central</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="tcdw">
+    <meta name="author" content="Nanako">
     
 </head>
 <body>
     <div id="tool-drum_fixer"><style>
-    #note_data {
-        resize: none; min-width: 500px; height: 60vh; max-height: 300px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace
+    @import url("https://cdn.jsdelivr.net/npm/water.css@2/out/water.css");
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+    input, textarea {
+        font-family: 'Consolas', 'Menlo', 'Courier New', Courier, monospace;
     }
 </style>
 
 <div>
     <h1>Drum Fixer</h1>
     <hr>
-    <textarea id="note_data">o4c4d4e4g+4d4&lt;c4f4&gt;&gt;g4a+4</textarea><br><button id="make_btn">Fix!</button>
+    <div id="drum-fixer-main"></div>
     <h2>About</h2>
     <p>In GM standard MIDI files, channel 10 is reserved for percussion instruments only. Notes recorded on channel 10 always produce percussion sounds when transmitted to a keyboard or synth module which uses the GM standard. (via <a href="https://en.wikipedia.org/wiki/General_MIDI">WikiPedia</a>)</p>
     <p>However, the sound driver of AddMusicK / AddMusicM do not have such feature. If you convert a song from MIDI, you have to define different instrument and other channel values to make it work.</p>
@@ -28,7 +32,7 @@
     <li><strong>Be aware this tool DO NOT deal with comments and other commands!</strong></li>
     </ul>
 </div></div>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.js" integrity="sha512-7cmvZh1K81vCevOl9YPcvR6lCFgxol/biMYQ+YwsCiQFePxFrMVbJaHGUlu01/2EhNxKzKRpztUhWrwLyKCfiQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="module">
         import {run} from "../api.js";
         import tool from "./index.js";
