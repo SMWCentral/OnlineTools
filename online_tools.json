@@ -1,5 +1,5 @@
 {
-    "commit": "4be7f75",
+    "commit": "8209996",
     "tools": [
         {
             "id": "bps",
@@ -58,6 +58,18 @@
                 {
                     "name": "WhiteYoshiEgg",
                     "user": 951
+                }
+            ]
+        },
+        {
+            "id": "mml2sfx",
+            "name": "mml2sfx",
+            "game": "smw",
+            "description": "Converts MML syntax into SFX hex commands for use with AddmusicK.",
+            "authors": [
+                {
+                    "name": "bebn legg",
+                    "user": 19971
                 }
             ]
         },
