@@ -3,6 +3,7 @@ function nearestNeighborScale(image, width, height) {
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
     ctx.drawImage(image, 0, 0, width, height);
     return canvas;
 }
