@@ -13,7 +13,6 @@ const ERROR_MESSAGES = new Map([
     [E_NOT_BPS, "Not a BPS patch."]
 ]);
 
-
 const SourceRead = 0;
 const TargetRead = 1;
 const SourceCopy = 2;
@@ -43,14 +42,11 @@ function crc32(bytes){
 
 const u32at = (patch, pos) => (patch[pos+0]<<0 | patch[pos+1]<<8 | patch[pos+2]<<16 | patch[pos+3]<<24)>>>0;
 
-
 // no error checking, other than BPS signature, input size/crc and JS auto checking array bounds
 function applyBPS(rom, patch){
     let patchpos = 0;
-    
 
     const u8 = () => patch[patchpos++];
-    
 
     function decode(){
         let ret = 0;
@@ -145,26 +141,28 @@ function applyBPS(rom, patch){
     return out;
 }
 
+const SMB2_REV_0 = Symbol("Rev 0");
+const SMB2_REV_A = Symbol("Rev A");
 
-const REV_0 = Symbol("Rev 0");
-const REV_A = Symbol("Rev A");
+const SMB2_REV_0_CRC = 0x7d3f6f3d;
+const SMB2_REV_A_CRC = 0xe0ca425c;
 
-const versions = {
-    0x7d3f6f3d: { 
+const smb2_versions = {
+    [SMB2_REV_0_CRC]: {
         name: "Super Mario Bros. 2 (U) (PRG0) [!].nes",
-        revision: REV_0,
+        revision: SMB2_REV_0,
         unheaderedCode: 0x57ac67af,
         header: [ 0x4E, 0x45, 0x53, 0x1A, 0x08, 0x10, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ]
     },
-    0x43507232: { 
+    0x43507232: {
         name: "Super Mario Bros. 2 (USA).nes",
-        revision: REV_0,
+        revision: SMB2_REV_0,
         unheaderedCode: 0x57ac67af,
         header: [ 0x4E, 0x45, 0x53, 0x1A, 0x08, 0x10, 0x40, 0x08, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x01 ]
     },
-    0xe0ca425c: { 
+    [SMB2_REV_A_CRC]: { 
         name: "Super Mario Bros. 2 (USA) (Rev A).nes",
-        revision: REV_A,
+        revision: SMB2_REV_A,
         unheaderedCode: 0xca594ace,
         header: [ 0x4E, 0x45, 0x53, 0x1A, 0x08, 0x10, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ]
     }
@@ -176,125 +174,159 @@ const Rev0ToRevA = Uint8Array.fromBase64("QlBTMRB/jhB/joA8UoCBkESNgaYov4GQWIGBpi
 // bps patch to convert from "Super Mario Bros. 2 (USA) (Rev A).nes" to "Super Mario Bros. 2 (U) (PRG0) [!].nes"
 const RevAToRev0 = Uint8Array.fromBase64("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");
 
+function handleBPS(romData, patchData) {
+    const rom = new Uint8Array(romData);
+    const patch = new Uint8Array(patchData);
+
+    // Best-case: the patch is intended for this ROM (also validates the patch)
+    try {
+        return applyBPS(rom, patch);
+    } catch(error) {
+        // Fallthrough if wrong ROM
+        if(error !== E_WRONG_INPUT) {
+            throw error;
+        }
+    }
+
+    // Maybe the patch is intended for a version of SMB2?
+    // (this u32at is safe, as the patch itself has already been validated above)
+    const requiredCode = u32at(patch, patch.length - 12);
+
+    if (requiredCode in smb2_versions) {
+        const requiredHeader = smb2_versions[requiredCode].header;
+        const unheaderedRom = new Uint8Array(romData, 16);
+        const unheaderedRomCode = crc32(unheaderedRom);
+
+        // Just fix the header.
+        if (unheaderedRomCode === smb2_versions[requiredCode].unheaderedCode) {
+            const reheaderedRom = Uint8Array.from(rom);
+            reheaderedRom.set(requiredHeader);
+
+            return applyBPS(reheaderedRom, patch)
+        }
+
+        // Convert from Rev 0 to Rev A.
+        if(
+            unheaderedRomCode == smb2_versions[SMB2_REV_0_CRC].unheaderedCode 
+            && smb2_versions[requiredCode].unheaderedCode == smb2_versions[SMB2_REV_A_CRC].unheaderedCode
+        ) {
+            const reheaderedRom = Uint8Array.from(rom);
+            reheaderedRom.set(smb2_versions[SMB2_REV_0_CRC].header);
+
+            const revisedRom = applyBPS(reheaderedRom, Rev0ToRevA);
+
+            const reheaderedRevisedRom = Uint8Array.from(revisedRom);
+            reheaderedRevisedRom.set(requiredHeader);
+
+            return applyBPS(reheaderedRevisedRom, patch);
+        }
+
+        // Convert from Rev A to Rev 0.
+        if(
+            unheaderedRomCode == smb2_versions[SMB2_REV_A_CRC].unheaderedCode 
+            && smb2_versions[requiredCode].unheaderedCode == smb2_versions[SMB2_REV_0_CRC].unheaderedCode
+        ) {
+            const reheaderedRom = Uint8Array.from(rom);
+            reheaderedRom.set(smb2_versions[SMB2_REV_A_CRC].header);
+
+            const revisedRom = applyBPS(reheaderedRom, RevAToRev0);
+
+            const reheaderedRevisedRom = Uint8Array.from(revisedRom);
+            reheaderedRevisedRom.set(requiredHeader);
+
+            return applyBPS(reheaderedRevisedRom, patch);
+        }
+    }
+
+    // Maybe a headered SNES ROM? Try to skip the first 512 bytes for patching
+    try {
+        const result = applyBPS(new Uint8Array(romData, 512), patch);
+
+        let buffer = new Uint8Array(result.length + 512); // create buffer large enough for rom and header
+        buffer.set(new Uint8Array(romData, 0, 512)); // copy header
+        buffer.set(result, 512); // copy rom data
+
+        return buffer;
+    } catch(error) {
+        // Fallthrough if wrong ROM
+        if(error !== E_WRONG_INPUT) {
+            throw error;
+        }
+    }
+
+    // None of our checks worked, this patch is not intended for this ROM
+    throw E_WRONG_INPUT;
+}
+
 export default function(smwc){
     /** @type HTMLInputElement */
     const romInput = smwc.byID("rom");
+
     /** @type HTMLInputElement */
     const patchInput = smwc.byID("patch");
+
     /** @type HTMLButtonElement */
     const button = smwc.byID("button");
 
     smwc.setStatus({message: "Select a Base ROM and a Patch."});
-    
-    var result = null;
-    
-    function patchRom(){
-        const romFile = romInput.files[0];
-        const patchFile = patchInput.files[0];
-        if (romFile == null && patchFile == null) {
-            return smwc.setStatus({message: "Select a Base ROM and a Patch."});
-        }
-        if (romFile == null) {
-            return smwc.setStatus({message: "Select a Base ROM."});
-        }
-        if (patchFile == null) {
-            return smwc.setStatus({message: "Select a Patch."});
-        }
-        
-        Promise.all([romFile.arrayBuffer(), patchFile.arrayBuffer()]).then(([romData, patchData]) => {
-            button.disabled = true;
 
-            const patch = new Uint8Array(patchData);
-            const requiredCode = u32at(patch, patch.length - 12);
-            const rom = new Uint8Array(romData)
-            const romCode = crc32(rom);
-            
-            // The patch is intended for this rom.
-            if (romCode == requiredCode) {
-                result = applyBPS(rom, patch)
-                button.disabled = false;
-                return smwc.setStatus({success: "Patch successful."});
-            }
-            
-            // The patch is intended for a version of SMB2.
-            if (requiredCode in versions) {
-                const requiredHeader = versions[requiredCode].header;
-                const unheaderedRom = new Uint8Array(romData, 16);
-                const unheaderedRomCode = crc32(unheaderedRom);
+    let result = null;
 
-                // Just fix the header.
-                if (unheaderedRomCode == versions[requiredCode].unheaderedCode) {
-                    const reheaderedRom = Uint8Array.from(rom);
-                    reheaderedRom.set(requiredHeader);
-                    result = applyBPS(reheaderedRom, patch)
-                    button.disabled = false;
-                    return smwc.setStatus({success: "Patch successful."});
-                }
+    async function patchROM() {
+        button.disabled = true;
 
-                // Convert from Rev 0 to Rev A.
-                if ( unheaderedRomCode == versions[0x7d3f6f3d].unheaderedCode 
-                     && versions[requiredCode].unheaderedCode == versions[0xe0ca425c].unheaderedCode ) {
-                        
-                        const reheaderedRom = Uint8Array.from(rom);
-                        reheaderedRom.set(versions[0x7d3f6f3d].header);
-                        const revisedRom = applyBPS(reheaderedRom, Rev0ToRevA);
-                        const reheaderedRevisedRom = Uint8Array.from(revisedRom);
-                        reheaderedRevisedRom.set(requiredHeader);
-                        result = applyBPS(reheaderedRevisedRom, patch)
-                        button.disabled = false;
-                        return smwc.setStatus({success: "Patch successful."});
-                }
+        try {
+            const romFile = romInput.files[0];
+            const patchFile = patchInput.files[0];
 
-                //Convert from Rev A to Rev 0.
-                if ( unheaderedRomCode == versions[0xe0ca425c].unheaderedCode 
-                     && versions[requiredCode].unheaderedCode == versions[0x7d3f6f3d].unheaderedCode ) {
-                        
-                        const reheaderedRom = Uint8Array.from(rom);
-                        reheaderedRom.set(versions[0xe0ca425c].header);
-                        const revisedRom = applyBPS(reheaderedRom, RevAToRev0);
-                        const reheaderedRevisedRom = Uint8Array.from(revisedRom);
-                        reheaderedRevisedRom.set(requiredHeader);
-                        result = applyBPS(reheaderedRevisedRom, patch)
-                        button.disabled = false;
-                        return smwc.setStatus({success: "Patch successful."});
-                }    
+            if (romFile == null && patchFile == null) {
+                smwc.setStatus({message: "Select a Base ROM and a Patch."});
+                return;
             }
 
-            // Remove the header
-            const unheaderedRom = new Uint8Array(romData, 512);
-            if (crc32(unheaderedRom) == requiredCode) {
-                result = applyBPS(unheaderedRom, patch);
-                let buffer = new Uint8Array(result.length + 512); // create buffer large enough for rom and header
-                buffer.set(new Uint8Array(romData, 0, 512)); // copy header
-                buffer.set(result, 512); // copy rom data
-
-                result = buffer;
-                button.disabled = false;
-                return smwc.setStatus({success: "Patch successful."});
+            if (romFile == null) {
+                smwc.setStatus({message: "Select a Base ROM."});
+                return;
             }
 
-            return smwc.setStatus({error: "This patch is not intended for this rom."});
-            
-        }).catch((error) => {
-            console.log(error);
-            smwc.setStatus({error: "Internal error."});
-        })   
-    }
-    
-    romInput.addEventListener("change", patchRom);
-    patchInput.addEventListener("change", patchRom);
-    
-    button.addEventListener("click", () => {
-        const romFile = romInput.files[0];
-        const patchFile = patchInput.files[0];
-        
-        if (result != null) {
+            if (patchFile == null) {
+                smwc.setStatus({message: "Select a Patch."});
+                return;
+            }
+
+            const [romData, patchData] = await Promise.all([romFile.arrayBuffer(), patchFile.arrayBuffer()]);
+
+            const resultFile = handleBPS(romData, patchData);
+
             const basename = patchFile.name.slice(0, patchFile.name.lastIndexOf("."));
             const ext = romFile.name.split(".").pop();
-            const filename = `${basename}.${ext}`;
-            const blob = new Blob([result], {type: romFile.type});
 
-            return smwc.download(filename, blob);
+            result = {
+                name: `${basename}.${ext}`,
+                blob: new Blob([resultFile], {type: romFile.type}),
+            };
+
+            button.disabled = false;
+
+            smwc.setStatus({success: "Patch successful."});
+        } catch(error) {
+            if(ERROR_MESSAGES.has(error)) {
+                smwc.setStatus({
+                    error: ERROR_MESSAGES.get(error),
+                });
+            } else {
+                console.log(error);
+                smwc.setStatus({error: "Internal error."});
+            }
+        }
+    }
+
+    romInput.addEventListener("change", patchROM);
+    patchInput.addEventListener("change", patchROM);
+
+    button.addEventListener("click", () => {
+        if (result != null) {
+            smwc.download(result.name, result.blob);
         }
     });
 }
