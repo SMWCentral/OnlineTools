@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "Online Tool",
     "type": "object",
-    "required": ["name", "game", "description", "authors", "dependencies"],
+    "required": ["name", "game", "description", "authors"],
     "properties": {
         "name": {
             "description": "User-friendly name of the tool, shown on the Online Tools page.",
@@ -11,7 +11,7 @@
         "game": {
             "description": "Which game is this tool relevant for?",
             "type": "string",
-            "enum": ["general", "smw", "yi", "sm64"]
+            "enum": ["general", "smw", "yi", "sm64", "smb2"]
         },
         "description": {
             "description": "A short description of the tool's purpose. More detailed instructions should be included in the tool itself.",
@@ -20,11 +20,6 @@
         "authors": {
             "type": "array",
             "items": {"$ref": "#/definitions/author"}
-        },
-        "dependencies": {
-            "description": "Dependencies to be automatically loaded before the tool runs.",
-            "type": "array",
-            "items": {"$ref": "#/definitions/dependency"}
         }
     },
     "additionalProperties": false,
@@ -40,26 +35,6 @@
                 "user": {
                     "description": "The author's user ID on SMW Central if they have an account.",
                     "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "dependency": {
-            "description": "A dependency loaded from cdnjs",
-            "type": "object",
-            "required": ["type", "library", "version", "file"],
-            "properties": {
-                "type": {
-                    "description": "Is the dependency a CSS or JS file?",
-                    "type": "string",
-                    "enum": ["style", "script"]
-                },
-                "library": {"type": "string"},
-                "version": {"type": "string"},
-                "file": {"type": "string"},
-                "late": {
-                    "description": "For scripts: Load before the tool code, or after the tool has run?",
-                    "type": "boolean"
                 }
             },
             "additionalProperties": false

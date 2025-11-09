@@ -1,3 +1,5 @@
+import { createApp, defineComponent, ref, reactive } from "vue"
+
 // ================================================================================================
 // Core logic
 
@@ -147,10 +149,6 @@ function idToNoteName(id) {
 
 // ================================================================================================
 // Building interface
-const { createApp, defineComponent, ref, reactive } = Vue
-
-// todo: in the future when OnlineTools fully support native ESM, use this instead (at top of the file):
-// import { createApp, defineComponent, ref, reactive } from "vue"
 
 // ================================================================================================
 // Shared global info

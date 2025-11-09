@@ -1,0 +1,11 @@
+td {
+    padding: 2px;
+}
+
+td.space {
+    height: 0.75em;
+}
+
+.invalid {
+    font-style: italic;
+}

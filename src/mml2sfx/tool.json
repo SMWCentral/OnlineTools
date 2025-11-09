@@ -4,6 +4,5 @@
     "description": "Converts MML syntax into SFX hex commands for use with AddmusicK.",
     "authors": [
         {"name": "bebn legg", "user": 19971}
-    ],
-    "dependencies": []
+    ]
 }

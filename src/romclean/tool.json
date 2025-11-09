@@ -4,6 +4,5 @@
     "description": "This tool checks if your ROM is a clean, headered (U) [!] ROM, suitable for use here. If it's unclean, it tries to clean it.",
     "authors": [
         {"name": "Telinc1", "user": 15661}
-    ],
-    "dependencies": []
+    ]
 }

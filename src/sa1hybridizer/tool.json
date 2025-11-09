@@ -4,6 +4,5 @@
     "description": "Attempts to make LoROM ASM files compatible with both LoROM and SA-1.",
     "authors": [
         {"name": "Atari2.0", "user": 35033}
-    ],
-    "dependencies": []
+    ]
 }

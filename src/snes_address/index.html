@@ -1,16 +1,13 @@
-<style>
-    td {
-        padding: 2px;
+<script type="importmap">
+  {
+    "imports": {
+      "alpinejs": "https://cdn.jsdelivr.net/npm/alpinejs@3.15.1/dist/module.esm.min.js"
+    },
+    "integrity": {
+      "https://cdn.jsdelivr.net/npm/alpinejs@3.15.1/dist/module.esm.min.js": "sha256-8AWUzlBlVGPd/aDeKURX6MD6028YlhgvZvbOp9s2uTw="
     }
-
-    td.space {
-        height: 0.75em;
-    }
-
-    .invalid {
-        font-style: italic;
-    }
-</style>
+  }
+</script>
 
 <table x-data="{ address: { snes: 0x008000, pc: 0x0, region: 'ROM' }, toPC: true, offset: 512, snestopc: convertLoROMToPC, pctosnes: convertPCToLoROM }">
     <tbody>

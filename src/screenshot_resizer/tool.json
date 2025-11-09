@@ -4,6 +4,5 @@
     "description": "A small utility to scale a source screenshot to acceptable size with nearest-neighbour interpolation.",
     "authors": [
         {"name": "AmperSam", "user": 41223}
-    ],
-    "dependencies": []
+    ]
 }

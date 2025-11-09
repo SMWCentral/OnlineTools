@@ -4,14 +4,5 @@
     "description": "Converts between SNES and PC addresses.",
     "authors": [
         {"name": "Telinc1", "user": 15661}
-    ],
-    "dependencies": [
-        {
-            "type": "script",
-            "library": "alpinejs",
-            "version": "3.2.1",
-            "file": "cdn.min.js",
-            "late": true
-        }
     ]
 }

@@ -1,4 +1,8 @@
-export default function(){
+import Alpine from "alpinejs";
+
+export default function() {
+    window.Alpine = Alpine;
+
     window.toHex = (/** @type number */ input) => `$${input.toString(16).toUpperCase().padStart(6, "0")}`;
 
     window.fromHex = (/** @type string */ input, /** @type number */ fallback) => {
@@ -45,4 +49,6 @@ export default function(){
         // Remap to the FastROM region if the address would map to WRAM.
         return {snes: ((snes & 0xFE0000) === 0x7E0000) ? snes | 0x800000 : snes, pc, region: "ROM"};
     };
+
+    Alpine.start();
 }

@@ -4,6 +4,5 @@
     "description": "Detects duplicate tiles in .map16 files exported from Lunar Magic.",
     "authors": [
         {"name": "WhiteYoshiEgg", "user": 951}
-    ],
-    "dependencies": []
+    ]
 }
