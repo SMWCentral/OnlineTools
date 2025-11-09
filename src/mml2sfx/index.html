@@ -27,12 +27,12 @@
         padding:5px;
     }
     </style>
-    
-    
-    
+
+
+
     <div class="boxes">
     <span><label for="input">Input (MML):</label><br><textarea id="input"></textarea></span>
-    <span><input type="button" id="convert" value="Convert"></textarea></span>
+    <span><input type="button" id="convert" value="Convert"></span>
     <span><label for="output">Output (hex):</label><br><textarea readonly id="output"></textarea></span>
     </div>
     <div class="boxes"><span><label for="priority">SFX Priority (optional) </label><input id="priority" type="number" min="0" max="255"></span></div>
@@ -40,7 +40,7 @@
 
     <h2>Info</h2>
     <p>This tool can be used to convert MML syntax into raw SFX hex bytes. While AddmusicK technically supports MML for sound effects, historically, it's been prone to being super buggy, so it's better to write raw hex, which is also incredibly tedious and hard-to-parse for anything remotely complex. This tool bridges that gap; you can write MML, which is then converted into hex bytes you can paste into AMK directly, without having to go through the tedium of raw hex.</p>
-    <p>    
+    <p>
         The following subset of MML syntax is accepted. Do note that SFX has some additional restrictions, which are noted in <span class="red">red</span>.
         <ul>
             <li>Notes (<span class="monospace">abcdefg</span>), sharps and flats (<span class="monospace">+</span> and <span class="monospace">-</span>, respectively), and note lengths (both regular and in ticks (<span class="monospace">=</span>)). <span class="red">SFX note lengths cannot be longer than $7F (127) ticks. Ties (<span class="monospace">^</span> and <span class="monospace">.</span>) are unsupported.</span></li>
@@ -57,6 +57,6 @@
     <p>You can also set priority for the sound effect by inputting a number <span class="red">between 0 and 255</span>. The higher the value, the higher priority the sound effect has compared to other sound effects; i.e., if two sound effects are to play over each other, the one with higher priority takes precedence. <span class="red">This command is only supported in AddmusicK 1.0.9 and up.</span></p>
     <p>By design, any values that are out of bounds for a given range (ex. an octave being too high, or an invalid volume value) throw a warning (which appears at the bottom), and are then clamped to be within the correct range (ex. a note in <span class="monospace">o7</span> would be rounded down to <span class="monospace">o6</span>) before the hex bytes are generated.<br>
     If the parser otherwise encounters something it can't decipher, it'll be returned as a <span class="monospace">?</span> in the output, which should hopefully help pinpoint where the mistake is.</p><br>
-    
-    
+
+
     <div id="warninglist"></div>

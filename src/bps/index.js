@@ -212,8 +212,8 @@ function handleBPS(romData, patchData) {
 
         // Convert from Rev 0 to Rev A.
         if (
-            unheaderedRomCode == smb2_versions[SMB2_REV_0_CRC].unheaderedCode &&
-            smb2_versions[requiredCode].unheaderedCode == smb2_versions[SMB2_REV_A_CRC].unheaderedCode
+            unheaderedRomCode === smb2_versions[SMB2_REV_0_CRC].unheaderedCode &&
+            smb2_versions[requiredCode].unheaderedCode === smb2_versions[SMB2_REV_A_CRC].unheaderedCode
         ) {
             const reheaderedRom = Uint8Array.from(rom);
             reheaderedRom.set(smb2_versions[SMB2_REV_0_CRC].header);
@@ -228,8 +228,8 @@ function handleBPS(romData, patchData) {
 
         // Convert from Rev A to Rev 0.
         if (
-            unheaderedRomCode == smb2_versions[SMB2_REV_A_CRC].unheaderedCode &&
-            smb2_versions[requiredCode].unheaderedCode == smb2_versions[SMB2_REV_0_CRC].unheaderedCode
+            unheaderedRomCode === smb2_versions[SMB2_REV_A_CRC].unheaderedCode &&
+            smb2_versions[requiredCode].unheaderedCode === smb2_versions[SMB2_REV_0_CRC].unheaderedCode
         ) {
             const reheaderedRom = Uint8Array.from(rom);
             reheaderedRom.set(smb2_versions[SMB2_REV_A_CRC].header);

@@ -15,8 +15,8 @@ function getFileNameWithoutExtension(filename) {
 function createImageElement(src, maxWidth, maxHeight) {
     const img = document.createElement("img");
     img.src = src;
-    img.style.maxWidth = maxWidth + "px";
-    img.style.maxHeight = maxHeight + "px";
+    img.style.maxWidth = `${maxWidth}px`;
+    img.style.maxHeight = `${maxHeight}px`;
     return img;
 }
 
@@ -66,7 +66,7 @@ export default function (smwc) {
                 const scaledPreview = createImageElement(scaledCanvas.toDataURL(), scaledWidth, scaledHeight);
                 resultContainer.appendChild(scaledPreview);
 
-                const fileName = getFileNameWithoutExtension(file.name) + "_scaled.png";
+                const fileName = `${getFileNameWithoutExtension(file.name)}_scaled.png`;
                 const saveButton = createButton("Save", "saveButton", () => saveImage(scaledCanvas, fileName));
                 resultContainer.appendChild(saveButton);
 

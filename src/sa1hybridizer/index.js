@@ -1,3 +1,6 @@
+// biome-ignore-all lint/style/useTemplate: old code
+// biome-ignore-all lint/correctness/useParseIntRadix: old code
+
 const famous_defines = `
 if read1($00FFD5) == $23		; check if the rom is sa-1
 	sa1rom
@@ -148,7 +151,7 @@ class WordTuple {
 Object.freeze(WordType);
 
 function normalizeHexStringToHexString(str) {
-    // this seems rather useless (and it may be) but it ensures consitency (kills whitespace, makes it all capital, fixes weird formats, etc..)
+    // this seems rather useless (and it may be) but it ensures consistency (kills whitespace, makes it all capital, fixes weird formats, etc..)
     return parseInt(str, 16).toString(16).toUpperCase();
 }
 
@@ -186,13 +189,13 @@ function process_word(word, index, splitted, comma_index, messages) {
     let add_dp = false;
     if (comma_index !== -1) {
         if (
-            word.length == 4 &&
+            word.length === 4 &&
             (splitted[comma_index + 1] === "y" || splitted[comma_index + 1] === "x") &&
-            word.substring(0, 2) == "00"
+            word.substring(0, 2) === "00"
         )
             add_dp = true;
     }
-    if (word.startsWith("8") && word.length == 6) {
+    if (word.startsWith("8") && word.length === 6) {
         word = word.replace("8", "0", 1);
     }
     const numeric_word = parseInt(word, 16);
@@ -234,7 +237,7 @@ function process_word(word, index, splitted, comma_index, messages) {
 function eval_stmt(string) {
     try {
         return new Function("return (" + string + ")")();
-    } catch (err) {
+    } catch {
         return NaN;
     }
 }
@@ -258,7 +261,7 @@ function convert(input) {
         if (line.trim() === "" || line.trimStart().startsWith(";") || define_found) {
             if (define_found) {
                 requires_manual_conversion = true;
-                const is_hex = define_found[2] != undefined;
+                const is_hex = define_found[2] != null;
                 const addr = parseInt(is_hex ? define_found[1].replace("$", "0x") : define_found[1], is_hex ? 16 : 10);
                 if (addr === 12) {
                     messages.push(`There is define ${define_found[0]} at line ${index + 1} which is equal to 12,

@@ -1,11 +1,12 @@
+// biome-ignore-all lint/style/useTemplate: old code
+// biome-ignore-all lint/correctness/useParseIntRadix: old code
+
 let outstr = "";
 let octaveG = 4; //current octave
-const noteG = 1; //note number in the current octave, 1-12
 
 let pos = 0; //current parser position
 let l = 24; //default note length (ticks)
 let lengthPrev = 24; //previous note length (ticks)
-const volPrev = 0; //previous volume
 
 let h = 0; //h shift
 
@@ -54,7 +55,7 @@ function handleNote(token) {
             lengthtoken = 192 / lengthtoken;
         }
 
-        if (lengthPrev != lengthtoken) {
+        if (lengthPrev !== lengthtoken) {
             //check whether to interpret number as ticks
             if (token.includes("=")) {
                 if (lengthtoken > 0x7f) {
@@ -64,7 +65,7 @@ function handleNote(token) {
 
                 lengthOut = "$" + lengthtoken.toString(16).padStart(2, "0");
             } else {
-                if (192 % lengthtoken != 0) {
+                if (192 % lengthtoken !== 0) {
                     warnings.push("⚠ Invalid note length at " + pos);
                     lengthtoken = Math.floor(lengthtoken);
                 } else if (lengthtoken > 0x7f) {
@@ -79,14 +80,14 @@ function handleNote(token) {
             // lengthG = parseInt(lengthtoken);
         }
 
-        if (lengthtoken != l) {
+        if (lengthtoken !== l) {
             lactivated = false;
         }
 
         lengthPrev = lengthtoken; //the previous note length for the next note is this note's length
     } else {
         if (!lactivated) {
-            if (l != lengthPrev) {
+            if (l !== lengthPrev) {
                 lengthOut = "$" + l.toString(16).padStart(2, "0");
                 lactivated = true;
             }
@@ -143,7 +144,7 @@ function handleO(token) {
 }
 
 function handleOd() {
-    if (octaveG == 1) {
+    if (octaveG === 1) {
         warnings.push("⚠ Octave too low (o < 1) at " + pos);
     } else {
         octaveG--;
@@ -151,7 +152,7 @@ function handleOd() {
 }
 
 function handleOu() {
-    if (octaveG == 6) {
+    if (octaveG === 6) {
         warnings.push("⚠ Octave too high (o > 6) at " + pos);
     } else {
         octaveG++;
@@ -191,7 +192,7 @@ function handleHex(token) {
     //check for pitch bend commands to adjust based on h
     //console.log(token);
 
-    if (token.substring(1, 3) == "dd") {
+    if (token.substring(1, 3) === "dd") {
         //console.log(token);
         //hex syntax
         if (
@@ -246,9 +247,9 @@ function handleHex(token) {
             const endnote = /(<|>)*[A-Ga-g][+-]?/.exec(token.substring(3 + startnote[0].length + 3 + 3)); //move cursor to the end; additions for clarity
 
             for (const i of startnote[0]) {
-                if (i == "<") {
+                if (i === "<") {
                     handleOd();
-                } else if (i == ">") {
+                } else if (i === ">") {
                     handleOu();
                 }
             }
@@ -283,9 +284,9 @@ function handleHex(token) {
 
             //handle end note
             for (const i of endnote[0]) {
-                if (i == "<") {
+                if (i === "<") {
                     handleOd();
-                } else if (i == ">") {
+                } else if (i === ">") {
                     handleOu();
                 }
             }
@@ -310,7 +311,7 @@ function handleHex(token) {
             warnings.push("⚠ Incorrect $DD parameters (should be 4 parameters, notes should have no lengths).");
             pos += 2;
         }
-    } else if (token.substring(1, 3) == "eb") {
+    } else if (token.substring(1, 3) === "eb") {
         if (
             /\$eb\$[0-9A-Fa-f][0-9A-Fa-f]\$[0-9A-Fa-f][0-9A-Fa-f]\$[0-9A-Fa-f][0-9A-Fa-f]/.test(token.substring(0, 12))
         ) {
@@ -358,9 +359,9 @@ function handleHex(token) {
 
             //handle end note
             for (const i of endnote) {
-                if (i == "<") {
+                if (i === "<") {
                     handleOd();
-                } else if (i == ">") {
+                } else if (i === ">") {
                     handleOu();
                 }
             }
@@ -405,7 +406,7 @@ function handleNoise(token) {
     }
 
     //if there is a second argument
-    if (nparam.length == 2) {
+    if (nparam.length === 2) {
         if (nparam[1] > 0x7f) {
             warnings.push("⚠ Noise instrument ref. > $7F at " + pos);
             noiseout += "$7f";
@@ -545,7 +546,7 @@ export default function (smwc) {
             warnings.push("⛔ Input length > 10000. Input not processed.");
         }
 
-        if (warnings.length != 0) {
+        if (warnings.length !== 0) {
             warninglist.appendChild(document.createTextNode("Warnings:"));
             for (const i of warnings) {
                 warninglist.appendChild(document.createElement("br"));

@@ -1,9 +1,9 @@
+import {execSync} from "node:child_process";
+import fs from "node:fs/promises";
+import path from "node:path";
 import Ajv from "ajv";
-import {execSync} from "child_process";
-import escape from "escape-html";
-import fs from "fs/promises";
+import escapeHTML from "escape-html";
 import {minify as minifyHTML} from "html-minifier-terser";
-import path from "path";
 import pc from "picocolors";
 import {minify as minifyJS} from "terser";
 
@@ -73,7 +73,7 @@ try {
     await fs.access(path.resolve(root, "dist"));
 
     console.log(`${pc.bgYellow(pc.black("[Warning]"))} Found stale dist directory (delete manually for a clean build)`);
-} catch (error) {
+} catch {
     // ignore
 }
 
@@ -138,9 +138,9 @@ const tools = await Promise.all(
                         .sort((a, b) => a.localeCompare(b))
                         .join(", "),
                     css: css ? `<style>${css}</style>` : "",
-                    html: `<div id="tool-${escape(id)}">${html.trim()}</div>`,
+                    html: `<div id="tool-${escapeHTML(id)}">${html.trim()}</div>`,
                 },
-                escape,
+                escapeHTML,
             );
 
             try {
@@ -188,7 +188,7 @@ if (String(execSync("git status --porcelain")).length === 0) {
     commit = String(execSync("git rev-parse --abbrev-ref HEAD")).trim();
 }
 
-let finalIndexHTML = indexHTML(tools, escape);
+let finalIndexHTML = indexHTML(tools, escapeHTML);
 
 try {
     finalIndexHTML = await processHTML(finalIndexHTML);
