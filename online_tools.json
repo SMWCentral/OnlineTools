@@ -1,5 +1,5 @@
 {
-    "commit": "8209996",
+    "commit": "a47d62c",
     "tools": [
         {
             "id": "bps",
@@ -18,6 +18,10 @@
                 {
                     "name": "Telinc1",
                     "user": 15661
+                },
+                {
+                    "name": "CircleFriendo",
+                    "user": 49634
                 }
             ]
         },
@@ -106,6 +110,18 @@
                 {
                     "name": "Atari2.0",
                     "user": 35033
+                }
+            ]
+        },
+        {
+            "id": "screenshot_resizer",
+            "name": "Screenshot Scaling Utility",
+            "game": "smw",
+            "description": "A small utility to scale a source screenshot to acceptable size with nearest-neighbour interpolation.",
+            "authors": [
+                {
+                    "name": "AmperSam",
+                    "user": 41223
                 }
             ]
         },

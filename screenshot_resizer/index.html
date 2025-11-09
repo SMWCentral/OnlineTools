@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Screenshot Scaling Utility - Online Tools - SMW Central</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="AmperSam">
+    
+</head>
+<body>
+    <div id="tool-screenshot_resizer"><style>
+body {
+    background: #fbfcfd;
+    font-family:sans-serif;
+    text-align: center;
+    font-size: 1.0rem;
+    line-height: 1.3em;
+    margin:4em auto;
+    max-width: 720px;
+    padding: 0 1em;
+}
+.half {
+    width: calc(720px * 0.5 - 3em);
+    display: inline-block;
+    vertical-align: top;
+}
+.item {
+    padding: 1em 0;
+    margin: 0 0.5em;
+    background-color: #fff;
+    border-radius: 9px;
+    border: 1px solid #ddd;
+}
+@media only screen and (min-device-width : 372px) and (max-device-width : 666px)  {
+    .half {margin: 1em auto;
+        display: block;
+    }
+}
+input {
+    margin: 1em;
+}
+button {
+    background-color: rgba(0,0,0,0.1);
+    border: none;
+    padding: 8px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 0.5em;
+    text-transform: uppercase;
+    font-size: 80% !important;
+    border-radius: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.saveButton {
+    background-color: #2196F3;
+    color: white;
+}
+</style>
+<h2>Screenshot Scaling Utility</h2><br>
+<p>Pick a screenshot to be scaled to <b>256&times;224</b> pixels with nearest neighbour interpolation.</p>
+<input type="file" id="fileInput" accept="image/*">
+<p>Scaling happens on your device, your screenshot isn't uploaded.</p>
+<div>
+    <div class="half">
+        <h4>Original</h4>
+        <div class="item" id="previewContainer"></div>
+    </div>
+    <div class="half">
+        <h4>Scaled</h4>
+        <div class="item" id="resultContainer"></div>
+    </div>
+</div></div>
+    
+    <script type="module">
+        import {run} from "../api.js";
+        import tool from "./index.js";
+
+        run("screenshot_resizer", tool);
+    </script>
+    
+</body>
+</html>
