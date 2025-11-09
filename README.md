@@ -43,6 +43,12 @@ $ npm run build     # build for production
 $ npm run build-dev # build without minifying source code
 ```
 
+You can run linting and autoformatting with:
+
+```shell
+$ npm run check
+```
+
 ### Playground
 You can develop tools in CodePen and JSFiddle. Start from a template:
 - [CodePen](https://codepen.io/telinc1/pen/LYyGyye)
