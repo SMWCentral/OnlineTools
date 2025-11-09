@@ -1,67 +1,70 @@
-import {execSync} from "child_process";
-import fs from "fs/promises";
-import path from "path";
-import url from "url";
-import {promisify} from "util";
-
+import {execSync} from "node:child_process";
+import fs from "node:fs/promises";
+import path from "node:path";
 import Ajv from "ajv";
-import axios from "axios";
-import chalk from "chalk";
-import escape from "escape-html";
-import {minify} from "terser";
+import escapeHTML from "escape-html";
+import {minify as minifyHTML} from "html-minifier-terser";
+import pc from "picocolors";
+import {minify as minifyJS} from "terser";
 
 import indexHTML from "./indexHTML.mjs";
 import toolHTML from "./toolHTML.mjs";
 
 const start = Date.now();
 
-const root = url.fileURLToPath(new URL("..", import.meta.url));
+const root = path.dirname(import.meta.dirname);
 
-function logInfo(source, text){
-    if(text == null){
-        console.log(source);
-    }else{
-        console.log(chalk`{blue [${source}]} ${text}`);
+function logInfo(sourceOrText, maybeText = null) {
+    if (maybeText == null) {
+        const text = sourceOrText;
+
+        console.log(text);
+    } else {
+        const source = sourceOrText;
+        const text = maybeText;
+
+        console.log(`${pc.blue(`[${source}]`)} ${text}`);
     }
 }
 
-function logFatal(source, text){
-    console.log(chalk`{bgRed.white [${source}]} ${text}`);
+function logFatal(source, text) {
+    console.log(`${pc.bgRed(pc.white(`[${source}]`))} ${text}`);
     process.exit(-1);
 }
 
-async function readFile(...segments){
+async function readFile(...segments) {
     return String(await fs.readFile(path.resolve(root, ...segments)));
 }
 
-async function readJSON(...segments){
+async function readJSON(...segments) {
     return JSON.parse(await readFile(...segments));
 }
 
-async function processJS(...segments){
+async function processJS(...segments) {
     const file = await readFile(...segments);
 
-    if(process.argv.includes("--no-minify")){
+    if (process.argv.includes("--no-minify")) {
         return file;
     }
 
-    const result = await minify(file, {toplevel: true});
+    const result = await minifyJS(file, {toplevel: true});
     return result.code;
 }
 
-const fetchedLibraries = new Map();
-
-async function fetchLibrary(id){
-    if(fetchedLibraries.has(id)){
-        return fetchedLibraries.get(id);
+async function processHTML(html) {
+    if (process.argv.includes("--no-minify")) {
+        return html;
     }
 
-    logInfo(`Fetching data for library ${id}`);
-
-    const request = axios.get(`https://api.cdnjs.com/libraries/${id}`);
-    fetchedLibraries.set(id, request);
-
-    return request;
+    return minifyHTML(html, {
+        caseSensitive: true,
+        collapseWhitespace: true,
+        decodeEntities: true,
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: true,
+        removeOptionalTags: true,
+    });
 }
 
 const validate = new Ajv().compile(await readJSON("scripts", "tool.schema.json"));
@@ -69,122 +72,104 @@ const validate = new Ajv().compile(await readJSON("scripts", "tool.schema.json")
 try {
     await fs.access(path.resolve(root, "dist"));
 
-    console.log(chalk`{bgYellow.black [Warning]} Found stale dist directory (delete manually for a clean build)`);
-}catch(error){
+    console.log(`${pc.bgYellow(pc.black("[Warning]"))} Found stale dist directory (delete manually for a clean build)`);
+} catch {
     // ignore
 }
 
 // Read and process all tools
-const tools = await Promise.all((await fs.readdir(path.resolve(root, "src"), {withFileTypes: true})).filter(
-    (file) => !file.name.startsWith(".") && file.isDirectory()
-).map((file) => file.name).map(async (id) => {
-    logInfo(`Discovered tool ${id}`);
+const tools = await Promise.all(
+    (await fs.readdir(path.resolve(root, "src"), {withFileTypes: true}))
+        .filter((file) => !file.name.startsWith(".") && file.isDirectory())
+        .map((file) => file.name)
+        .map(async (id) => {
+            logInfo(`Discovered tool ${id}`);
 
-    let info;
+            let info;
 
-    try {
-        info = await readJSON("src", id, "tool.json");
-    }catch(error){
-        logFatal(id, `Couldn't read tool.json: ${error.stack}`);
-    }
+            try {
+                info = await readJSON("src", id, "tool.json");
+            } catch (error) {
+                logFatal(id, `Couldn't read tool.json: ${error.stack}`);
+            }
 
-    if(!validate(info)){
-        logFatal(id, `Invalid tool.json: ${JSON.stringify(validate.errors)}`);
-    }
+            if (!validate(info)) {
+                logFatal(id, `Invalid tool.json: ${JSON.stringify(validate.errors)}`);
+            }
 
-    let markup;
+            let html;
 
-    try {
-        markup = await readFile("src", id, "index.html");
-    }catch(error){
-        if(error.code === "ENOENT"){
-            markup = "";
-        }else{
-            logFatal(id, `Couldn't read index.html: ${error.stack}`);
-        }
-    }
-
-    let script;
-
-    try {
-        script = await processJS("src", id, "index.js");
-    }catch(error){
-        logFatal(id, `Couldn't process index.js: ${error.stack}`);
-    }
-
-    const scripts = [];
-    const lateScripts = [];
-    const styles = [];
-
-    await Promise.all(info.dependencies.map(async (dependency, index) => {
-        const library = `${dependency.library}/${dependency.version}`;
-
-        let response;
-
-        try {
-            response = await fetchLibrary(library);
-        }catch(error){
-            logFatal(id, `Couldn't fetch required library ${library}: ${error.stack}`);
-        }
-
-        const {data} = response;
-
-        if(!data.files.includes(dependency.file)){
-            logFatal(id, `Library ${library} doesn't include required file ${dependency.file}`);
-        }
-
-        const url = `https://cdnjs.cloudflare.com/ajax/libs/${library}/${dependency.file}`;
-
-        if(!(dependency.file in data.sri)){
-            logFatal(id, `No SRI hash provided for file ${dependency.file} from library ${library}`);
-        }
-
-        const tail = `integrity="${escape(data.sri[dependency.file])}" crossorigin="anonymous" referrerpolicy="no-referrer"`;
-
-        // Put at `index` to ensure the order stays constant
-        switch(dependency.type){
-            case "script":
-                if(dependency.late){
-                    lateScripts[index] = `<script defer src="${escape(url)}" ${tail}></script>`;
-                }else{
-                    scripts[index] = `<script src="${escape(url)}" ${tail}></script>`;
+            try {
+                html = await readFile("src", id, "index.html");
+            } catch (error) {
+                if (error.code === "ENOENT") {
+                    html = "";
+                } else {
+                    logFatal(id, `Couldn't read index.html: ${error.stack}`);
                 }
+            }
 
-                break;
-            case "style":
-                styles[index] = `<link rel="stylesheet" href="${escape(url)}" ${tail} />`;
-                break;
-        }
-    }));
+            let css;
 
-    try {
-        await fs.mkdir(path.resolve(root, "dist", id), {recursive: true});
+            try {
+                css = await readFile("src", id, "main.css");
+            } catch (error) {
+                if (error.code === "ENOENT") {
+                    css = "";
+                } else {
+                    logFatal(id, `Couldn't read main.css: ${error.stack}`);
+                }
+            }
 
-        await Promise.all([
-            fs.writeFile(path.resolve(root, "dist", id, "index.js"), script),
-            fs.writeFile(path.resolve(root, "dist", id, "index.html"), toolHTML({
-                id,
-                name: info.name,
-                authors: info.authors.map((author) => author.name).sort((a, b) => a.localeCompare(b)).join(", "),
-                styles: styles.filter((item) => item != null).join("\n    "),
-                markup: `<div id="tool-${escape(id)}">${markup.trim()}</div>`,
-                scripts: scripts.filter((item) => item != null).join("\n    "),
-                lateScripts: lateScripts.filter((item) => item != null).join("\n    ")
-            }, escape))
-        ]);
+            let script;
 
-        logInfo(id, "Build successful");
-    }catch(error){
-        logFatal(id, `Couldn't write output: ${error.stack}`);
-    }
+            try {
+                script = await processJS("src", id, "index.js");
+            } catch (error) {
+                logFatal(id, `Couldn't process index.js: ${error.stack}`);
+            }
 
-    return {id, info};
-}));
+            let finalHTML = toolHTML(
+                {
+                    id,
+                    name: info.name,
+                    authors: info.authors
+                        .map((author) => author.name)
+                        .sort((a, b) => a.localeCompare(b))
+                        .join(", "),
+                    css: css ? `<style>${css}</style>` : "",
+                    html: `<div id="tool-${escapeHTML(id)}">${html.trim()}</div>`,
+                },
+                escapeHTML,
+            );
+
+            try {
+                finalHTML = await processHTML(finalHTML);
+            } catch (error) {
+                logFatal(id, `Couldn't process final index.html: ${error.stack}`);
+            }
+
+            try {
+                await fs.mkdir(path.resolve(root, "dist", id), {recursive: true});
+
+                await Promise.all([
+                    fs.writeFile(path.resolve(root, "dist", id, "index.js"), script),
+                    fs.writeFile(path.resolve(root, "dist", id, "index.html"), finalHTML),
+                ]);
+
+                logInfo(id, "Build successful");
+            } catch (error) {
+                logFatal(id, `Couldn't write output: ${error.stack}`);
+            }
+
+            return {id, info};
+        }),
+);
 
 // Process API code
 try {
     await fs.writeFile(path.resolve(root, "dist/api.js"), await processJS("src/api.js"));
-}catch(error){
+} catch (error) {
     logFatal("api.js", `Couldn't process API code: ${error.stack}`);
 }
 
@@ -195,26 +180,41 @@ logInfo("Writing indexes");
 
 let commit = "main";
 
-if(String(execSync("git status --porcelain")).length === 0){
+if (String(execSync("git status --porcelain")).length === 0) {
     // Working directory clean - point to last commit
     commit = String(execSync("git rev-parse --short HEAD")).trim();
-}else{
+} else {
     // Uncommitted changes - point to current branch
     commit = String(execSync("git rev-parse --abbrev-ref HEAD")).trim();
 }
 
+let finalIndexHTML = indexHTML(tools, escapeHTML);
+
+try {
+    finalIndexHTML = await processHTML(finalIndexHTML);
+} catch (error) {
+    logFatal(id, `Couldn't process index HTML: ${error.stack}`);
+}
+
 await Promise.all([
-    fs.writeFile(path.resolve(root, "dist", "online_tools.json"), JSON.stringify({
-        commit,
-        tools: tools.map((tool) => ({
-            id: tool.id,
-            name: tool.info.name,
-            game: tool.info.game,
-            description: tool.info.description,
-            authors: tool.info.authors
-        }))
-    }, undefined, "    ")),
-    fs.writeFile(path.resolve(root, "dist", "index.html"), indexHTML(tools, escape))
+    fs.writeFile(
+        path.resolve(root, "dist", "online_tools.json"),
+        JSON.stringify(
+            {
+                commit,
+                tools: tools.map((tool) => ({
+                    id: tool.id,
+                    name: tool.info.name,
+                    game: tool.info.game,
+                    description: tool.info.description,
+                    authors: tool.info.authors,
+                })),
+            },
+            undefined,
+            "    ",
+        ),
+    ),
+    fs.writeFile(path.resolve(root, "dist", "index.html"), finalIndexHTML),
 ]);
 
 logInfo("Success", `Built ${tools.length} tools in ${Date.now() - start} ms`);

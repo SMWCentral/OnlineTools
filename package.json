@@ -1,20 +1,23 @@
 {
-  "name": "@smwcentral/online-tools",
-  "version": "1.0.0",
-  "description": "Online tools maintained by SMW Central.",
-  "repository": "https://github.com/SMWCentral/OnlineTools",
-  "author": "SMWCentral",
-  "license": "MIT",
-  "scripts": {
-    "build": "node ./scripts/build.mjs",
-    "build-dev": "node ./scripts/build.mjs --no-minify"
-  },
-  "private": true,
-  "devDependencies": {
-    "ajv": "^8.6.0",
-    "axios": "^0.21.1",
-    "chalk": "^4.1.1",
-    "escape-html": "^1.0.3",
-    "terser": "^5.7.0"
-  }
+    "name": "@smwcentral/online-tools",
+    "version": "1.0.0",
+    "description": "Online tools maintained by SMW Central.",
+    "repository": "https://github.com/SMWCentral/OnlineTools",
+    "author": "SMWCentral",
+    "license": "MIT",
+    "scripts": {
+        "check": "biome check --write",
+        "workflow:check": "biome check",
+        "build": "node ./scripts/build.mjs",
+        "build-dev": "node ./scripts/build.mjs --no-minify"
+    },
+    "private": true,
+    "devDependencies": {
+        "@biomejs/biome": "2.3.4",
+        "ajv": "^8.6.0",
+        "escape-html": "^1.0.3",
+        "html-minifier-terser": "^7.2.0",
+        "picocolors": "^1.1.1",
+        "terser": "^5.7.0"
+    }
 }

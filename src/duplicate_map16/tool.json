@@ -2,8 +2,5 @@
     "name": "Duplicate Map16 Tile Finder",
     "game": "smw",
     "description": "Detects duplicate tiles in .map16 files exported from Lunar Magic.",
-    "authors": [
-        {"name": "WhiteYoshiEgg", "user": 951}
-    ],
-    "dependencies": []
+    "authors": [{"name": "WhiteYoshiEgg", "user": 951}]
 }

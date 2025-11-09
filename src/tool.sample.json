@@ -1,24 +1,6 @@
 {
     "name": "User-friendly name of the tool, shown on the Online Tools page",
-    "game": "Which game is this tool relevant for (general, smw, yi, sm64)",
+    "game": "Which game is this tool relevant for (general, smw, yi, sm64, smb2)",
     "description": "A short description of the tool's purpose. More detailed instructions should be included in the tool itself.",
-    "authors": [
-        {"name": "Author name (generic)"},
-        {"name": "Author name (SMWC user)", "user": 0}
-    ],
-    "dependencies": [
-        {
-            "type": "style",
-            "library": "Library name from cdnjs",
-            "version": "Version",
-            "file": "File name (CSS)"
-        },
-        {
-            "type": "script",
-            "library": "Library name from cdnjs",
-            "version": "Version",
-            "file": "File name (JS)",
-            "late": false
-        }
-    ]
+    "authors": [{"name": "Author name (generic)"}, {"name": "Author name (SMWC user)", "user": 0}]
 }

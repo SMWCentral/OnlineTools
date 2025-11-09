@@ -1,3 +1,6 @@
+// biome-ignore-all lint/style/useTemplate: old code
+// biome-ignore-all lint/correctness/useParseIntRadix: old code
+
 const famous_defines = `
 if read1($00FFD5) == $23		; check if the rom is sa-1
 	sa1rom
@@ -123,18 +126,19 @@ else
 endif"
 `;
 
-const sprite_addr_list = [0x7fab10, 0x7fab1c, 0x7fab28, 0x7fab34, 0x7fab9e, 0x7fab40, 0x7fab4c, 0x7fab58, 0x7fab64, 0x7fac00,
-    0x7fac08, 0x7fac10, 0x9e, 0xaa, 0xb6, 0xc2, 0xd8, 0xe4, 0x14c8, 0x14d4, 0x14e0, 0x14ec, 0x14f8,
-    0x1504, 0x1510, 0x151c, 0x1528, 0x1534, 0x1540, 0x154c, 0x1558, 0x1564, 0x1570, 0x157c, 0x1588,
-    0x1594, 0x15a0, 0x15ac, 0x15b8, 0x15c4, 0x15d0, 0x15dc, 0x15ea, 0x15f6, 0x1602, 0x160e, 0x161a,
-    0x1626, 0x1632, 0x163e, 0x164a, 0x1656, 0x1662, 0x166e, 0x167a, 0x1686, 0x186c, 0x187b, 0x190f,
-    0x1938, 0x7faf00, 0x1fd6, 0x1fe2];
+const sprite_addr_list = [
+    0x7fab10, 0x7fab1c, 0x7fab28, 0x7fab34, 0x7fab9e, 0x7fab40, 0x7fab4c, 0x7fab58, 0x7fab64, 0x7fac00, 0x7fac08,
+    0x7fac10, 0x9e, 0xaa, 0xb6, 0xc2, 0xd8, 0xe4, 0x14c8, 0x14d4, 0x14e0, 0x14ec, 0x14f8, 0x1504, 0x1510, 0x151c,
+    0x1528, 0x1534, 0x1540, 0x154c, 0x1558, 0x1564, 0x1570, 0x157c, 0x1588, 0x1594, 0x15a0, 0x15ac, 0x15b8, 0x15c4,
+    0x15d0, 0x15dc, 0x15ea, 0x15f6, 0x1602, 0x160e, 0x161a, 0x1626, 0x1632, 0x163e, 0x164a, 0x1656, 0x1662, 0x166e,
+    0x167a, 0x1686, 0x186c, 0x187b, 0x190f, 0x1938, 0x7faf00, 0x1fd6, 0x1fe2,
+];
 
 const WordType = {
     OTHER: -1,
     ADDR: 1,
-    COMMA: 2
-}
+    COMMA: 2,
+};
 
 class WordTuple {
     constructor(type, word, index) {
@@ -147,7 +151,7 @@ class WordTuple {
 Object.freeze(WordType);
 
 function normalizeHexStringToHexString(str) {
-    // this seems rather useless (and it may be) but it ensures consitency (kills whitespace, makes it all capital, fixes weird formats, etc..)
+    // this seems rather useless (and it may be) but it ensures consistency (kills whitespace, makes it all capital, fixes weird formats, etc..)
     return parseInt(str, 16).toString(16).toUpperCase();
 }
 
@@ -157,24 +161,23 @@ function checkRange(value, begin, end) {
 }
 
 function check_bwram(word) {
-    let bwram_word = parseInt(word, 16);
-    let bwram_remapped_list = [0x7F9A7B, 0x7027FF];          // Wiggler's segment buffer, Expansion area planned for SMW hacks
-    let map16_lo_by = [0x7EC800, 0x7EFFFF];                // Map16 low byte plus Overworld related data.
-    let map16_hi_by = [0x7FC800, 0x7FFFFF];                // Map16 high byte.
-    let save_mem = [0x700000, 0x7007FF];                // Original save memory (2 kB big). Not everything is used
-    let bwram_list = [map16_lo_by, map16_hi_by, save_mem];
-    let bwram_indexes = bwram_list.map(x => {
-        let [b, e] = x;
+    const bwram_word = parseInt(word, 16);
+    const bwram_remapped_list = [0x7f9a7b, 0x7027ff]; // Wiggler's segment buffer, Expansion area planned for SMW hacks
+    const map16_lo_by = [0x7ec800, 0x7effff]; // Map16 low byte plus Overworld related data.
+    const map16_hi_by = [0x7fc800, 0x7fffff]; // Map16 high byte.
+    const save_mem = [0x700000, 0x7007ff]; // Original save memory (2 kB big). Not everything is used
+    const bwram_list = [map16_lo_by, map16_hi_by, save_mem];
+    const bwram_indexes = bwram_list.map((x) => {
+        const [b, e] = x;
         return checkRange(bwram_word, b, e);
     });
-    let subs = ['map16_lo_by', 'map16_hi_by', 'save_mem'];
-    if (bwram_indexes.some(x => x)) {
-        let true_index = bwram_indexes.indexOf(true);
-        let sub = `${bwram_word.toString(16).toUpperCase().padStart(6, '0')}&$00FFFF|!${subs[true_index]}`;
+    const subs = ["map16_lo_by", "map16_hi_by", "save_mem"];
+    if (bwram_indexes.some((x) => x)) {
+        const true_index = bwram_indexes.indexOf(true);
+        const sub = `${bwram_word.toString(16).toUpperCase().padStart(6, "0")}&$00FFFF|!${subs[true_index]}`;
         return [sub, true];
-    }
-    else if (bwram_word in bwram_remapped_list) {
-        let sub = `!${bwram_word.toString(16).toUpperCase().padStart(6, '0')}`;
+    } else if (bwram_word in bwram_remapped_list) {
+        const sub = `!${bwram_word.toString(16).toUpperCase().padStart(6, "0")}`;
         return [sub, true];
     }
     return [word, false];
@@ -185,91 +188,93 @@ function process_word(word, index, splitted, comma_index, messages) {
     let converted = true;
     let add_dp = false;
     if (comma_index !== -1) {
-        if (word.length == 4 && (splitted[comma_index + 1] === 'y' || splitted[comma_index + 1] === 'x') && word.substring(0, 2) == '00')
+        if (
+            word.length === 4 &&
+            (splitted[comma_index + 1] === "y" || splitted[comma_index + 1] === "x") &&
+            word.substring(0, 2) === "00"
+        )
             add_dp = true;
     }
-    if (word.startsWith('8') && word.length == 6) {
-        word = word.replace('8', '0', 1);
+    if (word.startsWith("8") && word.length === 6) {
+        word = word.replace("8", "0", 1);
     }
-    let numeric_word = parseInt(word, 16);
+    const numeric_word = parseInt(word, 16);
     if (Number.isNaN(numeric_word)) {
         throw `Error during parsing of address ${word}`;
     }
     let bwram_define_needed = false;
-    if (word.length === 6)
-        [word, bwram_define_needed] = check_bwram(word);
-    if (bwram_define_needed)
-        return [word, bwram_define_needed, converted, requires_manual_conversion];
+    if (word.length === 6) [word, bwram_define_needed] = check_bwram(word);
+    if (bwram_define_needed) return [word, bwram_define_needed, converted, requires_manual_conversion];
 
     if (sprite_addr_list.indexOf(numeric_word) !== -1) {
-        word = '!' + (add_dp ? `${normalizeHexStringToHexString(word)}|!dp` : `${normalizeHexStringToHexString(word)}`);
-    } else if (word.length === 6 && checkRange(numeric_word, 0x000000, 0x0FFFFF)) {
-        word = '$' + word + '|!bank';
-    } else if (word.length === 6 && checkRange(numeric_word, 0x7E0000, 0x7E1FFF)) {
+        word = "!" + (add_dp ? `${normalizeHexStringToHexString(word)}|!dp` : `${normalizeHexStringToHexString(word)}`);
+    } else if (word.length === 6 && checkRange(numeric_word, 0x000000, 0x0fffff)) {
+        word = "$" + word + "|!bank";
+    } else if (word.length === 6 && checkRange(numeric_word, 0x7e0000, 0x7e1fff)) {
         try {
-            let short_word = word.substring(2);
-            let spr_index = sprite_addr_list.indexOf(parseInt(short_word, 16));
+            const short_word = word.substring(2);
+            const spr_index = sprite_addr_list.indexOf(parseInt(short_word, 16));
             word = `!${sprite_addr_list[spr_index].toString(16)}`;
         } catch {
             word = `($${word}&$FFFF)|bankA`;
         }
     } else if (word.length === 2) {
         converted = false;
-        word = '$' + word;
-    } else if (checkRange(numeric_word, 0x0100, 0x1FFF)) {
-        word = '$' + word + '|!addr';
-    } else if (checkRange(numeric_word, 0x0000, 0x00FF)) {
-        word = '$' + word + '|!dp';
+        word = "$" + word;
+    } else if (checkRange(numeric_word, 0x0100, 0x1fff)) {
+        word = "$" + word + "|!addr";
+    } else if (checkRange(numeric_word, 0x0000, 0x00ff)) {
+        word = "$" + word + "|!dp";
     } else {
         converted = false;
         requires_manual_conversion = true;
-        word = '$' + word;
-        messages.push(`Address ${word.toString(16).padStart(word.length, '0')} at line ${index} couldn't be converted`);
+        word = "$" + word;
+        messages.push(`Address ${word.toString(16).padStart(word.length, "0")} at line ${index} couldn't be converted`);
     }
     return [word, bwram_define_needed, converted, requires_manual_conversion];
 }
 
 function eval_stmt(string) {
     try {
-        return (new Function('return (' + string + ')')());
-    } catch (err) {
+        return new Function("return (" + string + ")")();
+    } catch {
         return NaN;
     }
 }
 
 function convert(input) {
     const lines = input.split("\n");
-    let bw_defs = [];
+    const bw_defs = [];
     let output = famous_defines;
-    let outlines = [];
-    let messages = [];
+    const outlines = [];
+    const messages = [];
     let tot_conversions = 0;
     let requires_manual_conversion = false;
     for (const [index, line] of lines.entries()) {
-        outlines.push('');
-        const data_types = ['db', 'dw', 'dl', 'dd'];
+        outlines.push("");
+        const data_types = ["db", "dw", "dl", "dd"];
         let in_comment = false;
         let in_data = false;
-        let reg = /![A-Za-z\d_]+\s+=\s+((\$)?[\dA-Fa-f]{2,6})\S*/;
-        let define_found = line.match(reg);
-        let words = line.trimEnd().split(/([ \t;])/);
-        if (line.trim() === "" || line.trimStart().startsWith(';') || define_found) {
+        const reg = /![A-Za-z\d_]+\s+=\s+((\$)?[\dA-Fa-f]{2,6})\S*/;
+        const define_found = line.match(reg);
+        const words = line.trimEnd().split(/([ \t;])/);
+        if (line.trim() === "" || line.trimStart().startsWith(";") || define_found) {
             if (define_found) {
                 requires_manual_conversion = true;
-                let is_hex = define_found[2] != undefined;
-                const addr = parseInt(is_hex ? define_found[1].replace('$', '0x') : define_found[1], is_hex ? 16 : 10);
+                const is_hex = define_found[2] != null;
+                const addr = parseInt(is_hex ? define_found[1].replace("$", "0x") : define_found[1], is_hex ? 16 : 10);
                 if (addr === 12) {
                     messages.push(`There is define ${define_found[0]} at line ${index + 1} which is equal to 12,
                      this might be a define related to how many sprites can be loaded by the game
                      if so, change it to 22 or $16, or (even better) use the following\n
                     \tif read1($00FFD5) == $23\n\t\t${define_found[0]}\n\telse\n\t\t
-                    ${define_found[0].split("=")[0]}= ${is_hex ? "$16" : "22"}\n\tendif\n`)
+                    ${define_found[0].split("=")[0]}= ${is_hex ? "$16" : "22"}\n\tendif\n`);
                 } else if (sprite_addr_list.indexOf(addr) !== -1 && is_hex) {
                     messages.push(`There is define ${define_found[0]} at line ${index + 1} which is a sprite
                     address, usually replacing the $ with ! works in most tools, it didn't get
                     converted automatically because it might not be necessary to do so, make sure
-                    to convert manually it ONLY if needed.\n`)
-                } else if (checkRange(addr, 0x0100, 0x1FFF)) {
+                    to convert manually it ONLY if needed.\n`);
+                } else if (checkRange(addr, 0x0100, 0x1fff)) {
                     messages.push(`There is define ${define_found[0]} at line ${index + 1} which might be a ram
                      address, if it is, convert it by adding |!addr at the end of it, if it's not
                      a ram address leave it alone\n`);
@@ -279,62 +284,68 @@ function convert(input) {
             continue;
         }
         let ignore_next_address = false;
-        for (let og_word of words) {
-            let stripped_word = og_word.trim();
-            let to_insert = '';
-            let addr = /\$[\da-fA-F]{1,6}\|![a-zA-Z\d_]+\b/.exec(og_word);
-            if (in_comment || in_data) { }
-            else if (stripped_word[0] === ';') {
+        for (const og_word of words) {
+            const stripped_word = og_word.trim();
+            let to_insert = "";
+            const addr = /\$[\da-fA-F]{1,6}\|![a-zA-Z\d_]+\b/.exec(og_word);
+            if (in_comment || in_data) {
+            } else if (stripped_word[0] === ";") {
                 in_comment = true;
-            } else if (data_types.some(x => x === stripped_word)) {
+            } else if (data_types.some((x) => x === stripped_word)) {
                 in_data = true;
-            } else if (stripped_word.startsWith('PEA') || stripped_word.startsWith('PER')) {
+            } else if (stripped_word.startsWith("PEA") || stripped_word.startsWith("PER")) {
                 ignore_next_address = true;
             } else if (addr !== null) {
                 messages.push(`Address was maybe already hybrid ${addr} at line ${index + 1}`);
-            } else if (/\$[^, \n()\[\]]{1,6}/.exec(og_word) !== null) {
+            } else if (/\$[^, \n()[\]]{1,6}/.exec(og_word) !== null) {
                 if (ignore_next_address) {
                     ignore_next_address = false;
                     outlines[index] += og_word;
                     continue;
                 }
-                let splitted = og_word.split(/([\[\](), ])/);
-                let word_tuples = []
+                const splitted = og_word.split(/([[\](), ])/);
+                const word_tuples = [];
                 for (let [i, word] of splitted.entries()) {
-                    if (word.startsWith('$')) {
-                        let proc_word = parseInt(eval_stmt(word.replace('$', '0x')));
+                    if (word.startsWith("$")) {
+                        const proc_word = parseInt(eval_stmt(word.replace("$", "0x")));
                         if (!Number.isNaN(proc_word)) {
-                            let expr = word.replace('$', '').split(/[+\\\-^*~<>|]/);
-                            word = `$${proc_word.toString(16).toUpperCase().padStart(Math.max(...expr.map((e) => e.length)), "0")}`;
+                            const expr = word.replace("$", "").split(/[+\\\-^*~<>|]/);
+                            word = `$${proc_word
+                                .toString(16)
+                                .toUpperCase()
+                                .padStart(Math.max(...expr.map((e) => e.length)), "0")}`;
                             word_tuples.push(new WordTuple(WordType.ADDR, word, i));
                         } else {
-                            let bunch = word.split(/([+\-^*~<>| ])/);
-                            for (let w of bunch) {
-                                if (w.startsWith('$'))
-                                    word_tuples.push(new WordTuple(WordType.ADDR, w, i));
-                                else
-                                    word_tuples.push(new WordTuple(WordType.OTHER, w, i));
+                            const bunch = word.split(/([+\-^*~<>| ])/);
+                            for (const w of bunch) {
+                                if (w.startsWith("$")) word_tuples.push(new WordTuple(WordType.ADDR, w, i));
+                                else word_tuples.push(new WordTuple(WordType.OTHER, w, i));
                             }
                         }
-                    } else if (word.startsWith(',')) {
+                    } else if (word.startsWith(",")) {
                         word_tuples.push(new WordTuple(WordType.COMMA, word, i));
                     } else {
                         word_tuples.push(new WordTuple(WordType.OTHER, word, i));
                     }
                 }
-                for (let struct of word_tuples) {
-                    let wordtype = struct.type;
-                    let word = struct.word;
-                    let i = struct.index;
+                for (const struct of word_tuples) {
+                    const wordtype = struct.type;
+                    const word = struct.word;
+                    const i = struct.index;
                     if (wordtype === WordType.ADDR) {
                         try {
-                            let current_tuple = word_tuples[i + 1];
+                            const current_tuple = word_tuples[i + 1];
                             let comma_index = -1;
                             if (current_tuple !== undefined)
                                 comma_index = current_tuple.type === WordType.COMMA ? i + 1 : -1;
-                            let [ww, bwram_define_needed, converted, manual_conversion] = process_word(word.replace('$', ''), index, splitted, comma_index, messages);
-                            if (manual_conversion)
-                                requires_manual_conversion = true;
+                            const [ww, bwram_define_needed, converted, manual_conversion] = process_word(
+                                word.replace("$", ""),
+                                index,
+                                splitted,
+                                comma_index,
+                                messages,
+                            );
+                            if (manual_conversion) requires_manual_conversion = true;
                             if (converted) {
                                 tot_conversions += 1;
                                 messages.push(`Conversion ${word} -> ${ww}`);
@@ -352,23 +363,23 @@ function convert(input) {
             outlines[index] += to_insert.length !== 0 ? to_insert : og_word;
         }
     }
-    if (bw_defs.some(x => x)) {
+    if (bw_defs.some((x) => x)) {
         output += bwram_defines;
     }
     messages.push(`Total conversions: ${tot_conversions}`);
     if (requires_manual_conversion) {
         messages.push(`Could require manual conversion for some addresses`);
     }
-    output += outlines.join('\n');
-    return [output, messages.join('\n')];
+    output += outlines.join("\n");
+    return [output, messages.join("\n")];
 }
 
 function doSa1Hybridize(input) {
     try {
-        let [output, messages] = convert(input);
-        return { asm: output, messages: messages };
+        const [output, messages] = convert(input);
+        return {asm: output, messages: messages};
     } catch (err) {
-        return { err: err };
+        return {err: err};
     }
 }
 
@@ -381,21 +392,24 @@ export default function (smwc) {
         const file = fileInput.files[0];
 
         if (file == null) {
-            return smwc.setStatus({ error: "No file specified." });
+            return smwc.setStatus({error: "No file specified."});
         }
 
         generate.disabled = true;
-        file.text().then((input) => {
-            const result = doSa1Hybridize(input);
-            smwc.setStatus({ success: '\n' + result.messages });
-            if (result.asm != null) {
-                return smwc.download(file.name, new Blob([result.asm], { type: "text/x-asm" }));
-            }
-        }).catch((error) => {
-            console.log(error);
-            smwc.setStatus({ error: "Internal error." });
-        }).finally(() => {
-            generate.disabled = false;
-        });
+        file.text()
+            .then((input) => {
+                const result = doSa1Hybridize(input);
+                smwc.setStatus({success: "\n" + result.messages});
+                if (result.asm != null) {
+                    return smwc.download(file.name, new Blob([result.asm], {type: "text/x-asm"}));
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                smwc.setStatus({error: "Internal error."});
+            })
+            .finally(() => {
+                generate.disabled = false;
+            });
     });
 }

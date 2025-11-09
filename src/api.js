@@ -1,8 +1,8 @@
-function createDefaultStatusHandler(root){
+function createDefaultStatusHandler(root) {
     let statusDOM;
 
     return (status) => {
-        if(statusDOM == null){
+        if (statusDOM == null) {
             const container = document.getElementById("status") ?? document.createElement("div");
             container.style.display = "none";
 
@@ -12,29 +12,29 @@ function createDefaultStatusHandler(root){
             container.appendChild(document.createElement("hr"));
             container.appendChild(statusDiv);
 
-            if(!container.isConnected){
+            if (!container.isConnected) {
                 root.appendChild(container);
             }
 
             statusDOM = {container, status: statusDiv};
         }
 
-        if(status.error != null){
+        if (status.error != null) {
             statusDOM.container.style.display = "";
             statusDOM.status.innerText = `❌ Error: ${status.error}`;
-        }else if(status.success != null){
+        } else if (status.success != null) {
             statusDOM.container.style.display = "";
             statusDOM.status.innerText = `✅ ${status.success}`;
-        }else if(status.message != null){
+        } else if (status.message != null) {
             statusDOM.container.style.display = "";
             statusDOM.status.innerText = status.message;
-        }else{
+        } else {
             statusDOM.container.style.display = "none";
         }
     };
 }
 
-async function download(/** @type string */ name, /** @type Blob */ blob){
+async function download(/** @type string */ name, /** @type Blob */ blob) {
     const download = document.createElement("a");
     download.href = URL.createObjectURL(blob);
     download.download = name;
@@ -55,12 +55,12 @@ async function download(/** @type string */ name, /** @type Blob */ blob){
 /**
  * Run a tool in a code playground (e.g. CodePen, JSFiddle).
  */
-export function runInPlayground(tool){
+export function runInPlayground(tool) {
     const api = {
         root: document.body,
         byID: (/** @type string */ id) => document.getElementById(id),
         setStatus: createDefaultStatusHandler(document.body),
-        download
+        download,
     };
 
     tool(api);
@@ -71,7 +71,7 @@ export function runInPlayground(tool){
  *
  * @internal
  */
-export function run(toolID, tool){
+export function run(toolID, tool) {
     const root = document.getElementById(`tool-${toolID}`);
 
     let lastHeight;
@@ -79,7 +79,7 @@ export function run(toolID, tool){
     const observer = new ResizeObserver(() => {
         const height = document.scrollingElement.scrollHeight;
 
-        if(lastHeight !== height){
+        if (lastHeight !== height) {
             lastHeight = height;
             window.parent.postMessage({height}, "*");
         }
@@ -91,7 +91,7 @@ export function run(toolID, tool){
         root,
         byID: (/** @type string */ id) => root.querySelector(`#${id}`),
         setStatus: createDefaultStatusHandler(root),
-        download
+        download,
     };
 
     tool(api);

@@ -2,8 +2,5 @@
     "name": ".pal Generator",
     "game": "smw",
     "description": "Creates .pal files from screenshots of Lunar Magic's palette editor. May or may not be useful when you edit palettes in an external tool and don't want to copy each color back over manually.",
-    "authors": [
-        {"name": "WhiteYoshiEgg", "user": 951}
-    ],
-    "dependencies": []
+    "authors": [{"name": "WhiteYoshiEgg", "user": 951}]
 }

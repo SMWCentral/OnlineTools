@@ -1,15 +1,17 @@
+import {createApp, defineComponent, reactive, ref} from "vue";
+
 // ================================================================================================
 // Core logic
 
 const notePitch = {
-    'c': 0,
-    'd': 2,
-    'e': 4,
-    'f': 5,
-    'g': 7,
-    'a': 9,
-    'b': 11,
-}
+    c: 0,
+    d: 2,
+    e: 4,
+    f: 5,
+    g: 7,
+    a: 9,
+    b: 11,
+};
 
 /**
  * @typedef {Object} DoWalkOptions
@@ -20,7 +22,7 @@ const notePitch = {
  * Convert MML
  * @param {string} data MML data
  * @param {DoWalkOptions} options
- * @returns 
+ * @returns
  */
 function doWalk(data, options) {
     const walkLength = data.length;
@@ -47,28 +49,28 @@ function doWalk(data, options) {
 
     while (walked < walkLength) {
         switch (data[walked]) {
-            case 'o': {
+            case "o": {
                 currentOctave = Number(data[walked + 1]);
                 walked += 2;
                 break;
             }
-            case '<': {
+            case "<": {
                 currentOctave -= 1;
                 walked += 1;
                 break;
             }
-            case '>': {
+            case ">": {
                 currentOctave += 1;
                 walked += 1;
                 break;
             }
-            case 'c':
-            case 'd':
-            case 'e':
-            case 'f':
-            case 'g':
-            case 'a':
-            case 'b': {
+            case "c":
+            case "d":
+            case "e":
+            case "f":
+            case "g":
+            case "a":
+            case "b": {
                 currentPitch = currentOctave * 12 + notePitch[data[walked]];
                 if (data[walked + 1] === "+" || data[walked + 1] === "-") {
                     currentPitch += data[walked + 1] === "+" ? 1 : -1;
@@ -80,8 +82,8 @@ function doWalk(data, options) {
                 walked += 1;
                 break;
             }
-            case 'q':
-            case '$': {
+            case "q":
+            case "$": {
                 applyChar(data.slice(walked, walked + 3));
                 walked += 3;
                 break;
@@ -93,16 +95,16 @@ function doWalk(data, options) {
             }
         }
     }
-    const builtLabel = [...allLabel]
+    const builtLabel = [...allLabel];
     if (options.sort) {
         builtLabel.sort((a, b) => {
             if (a > b) {
-                return 1
+                return 1;
             }
-            return -1
-        })
+            return -1;
+        });
     }
-    return { builtDataSet, builtLabel };
+    return {builtDataSet, builtLabel};
 }
 
 function toFixedMML(builtDataSet, label) {
@@ -115,10 +117,10 @@ function toFixedMML(builtDataSet, label) {
 
     // apply label define
     label.forEach((e) => {
-        data += `"${e.label}=o4 @0 c"\n`
-        data += `"${e.label}_R=c"\n`
-    })
-    data += "\n"
+        data += `"${e.label}=o4 @0 c"\n`;
+        data += `"${e.label}_R=c"\n`;
+    });
+    data += "\n";
 
     // apply notes
     let prevNote = null;
@@ -132,13 +134,13 @@ function toFixedMML(builtDataSet, label) {
             return;
         }
         data += e;
-    })
+    });
 
     return data;
 }
 
 /**
- * @param {number} id 
+ * @param {number} id
  */
 function idToNoteName(id) {
     const prefix = "C C# D D# E F F# G G# A A# B".split(" ");
@@ -147,10 +149,6 @@ function idToNoteName(id) {
 
 // ================================================================================================
 // Building interface
-const { createApp, defineComponent, ref, reactive } = Vue
-
-// todo: in the future when OnlineTools fully support native ESM, use this instead (at top of the file):
-// import { createApp, defineComponent, ref, reactive } from "vue"
 
 // ================================================================================================
 // Shared global info
@@ -165,11 +163,11 @@ d4d4d4d4
 f4f4f4f4`,
     step: 1,
     rawResults: {
-        builtDataSet: [], 
+        builtDataSet: [],
         builtLabel: [],
     },
-    label: []
-})
+    label: [],
+});
 
 // ================================================================================================
 // First step form
@@ -180,12 +178,12 @@ const FirstStep = defineComponent({
 
         function handleSubmit() {
             globalInfo.rawResults = doWalk(globalInfo.noteData, {
-                sort: sortMode.value === "pitch"
+                sort: sortMode.value === "pitch",
             });
             globalInfo.label = globalInfo.rawResults.builtLabel.map((e) => ({
                 label: `PERC${String(e).padStart(2, "0")}X`,
                 value: e,
-            }))
+            }));
             globalInfo.step = 2;
         }
 
@@ -193,7 +191,7 @@ const FirstStep = defineComponent({
             globalInfo,
             handleSubmit,
             sortMode,
-        }
+        };
     },
     template: `
         <form @submit.prevent="handleSubmit" target="#">
@@ -214,8 +212,8 @@ const FirstStep = defineComponent({
                 <button type="submit">Next Step</button>
             </div>
         </form>
-    `
-})
+    `,
+});
 
 // ================================================================================================
 // Second step form
@@ -234,8 +232,8 @@ const SecondStep = defineComponent({
             globalInfo,
             idToNoteName,
             handleNextStep,
-            handlePrevStep
-        }
+            handlePrevStep,
+        };
     },
     template: `
         <p>(Optional) You can set label name for each note here. Each label name should begin or end with UPPERCASE letter.</p>
@@ -258,8 +256,8 @@ const SecondStep = defineComponent({
             <button @click="handlePrevStep">Prev Step</button>
             <button @click="handleNextStep">Next Step</button>
         </div>
-    `
-})
+    `,
+});
 
 // ================================================================================================
 // First step form
@@ -276,7 +274,7 @@ const ThirdStep = defineComponent({
             globalInfo,
             result,
             handleFixAnother,
-        }
+        };
     },
     template: `
         <form @submit.prevent="handleFixAnother" target="#">
@@ -286,12 +284,12 @@ const ThirdStep = defineComponent({
                 <button type="submit">Fix Another</button>
             </div>
         </form>
-    `
-})
+    `,
+});
 
 // ================================================================================================
 // Init program
-export default function() {
+export default function () {
     createApp({
         components: {
             FirstStep,
@@ -300,13 +298,13 @@ export default function() {
         },
         setup() {
             return {
-                globalInfo
-            }
+                globalInfo,
+            };
         },
         template: `
             <first-step v-if="globalInfo.step === 1"></first-step>
             <second-step v-if="globalInfo.step === 2"></second-step>
             <third-step v-if="globalInfo.step === 3"></third-step>
-        `
-    }).mount('#drum-fixer-main')
+        `,
+    }).mount("#drum-fixer-main");
 }

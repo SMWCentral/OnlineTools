@@ -1,4 +1,4 @@
-export default (tools, escape) => `<!DOCTYPE html>
+export default (tools, escapeHTML) => `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,11 +8,11 @@ export default (tools, escape) => `<!DOCTYPE html>
 <body>
     <h1>Online Tools</h1>
     <ul>
-        ${tools.slice().sort(
-            (a, b) => a.info.name.localeCompare(b.info.name)
-        ).map(
-            (tool) => `<li><a href="${escape(tool.id)}">${escape(tool.info.name)}</a></li>`).join("\n        ")
-        }
+        ${tools
+            .slice()
+            .sort((a, b) => a.info.name.localeCompare(b.info.name))
+            .map((tool) => `<li><a href="${escapeHTML(tool.id)}">${escapeHTML(tool.info.name)}</a></li>`)
+            .join("\n        ")}
     </ul>
 </body>
 </html>

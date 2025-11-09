@@ -2,8 +2,5 @@
     "name": "Screenshot Scaling Utility",
     "game": "smw",
     "description": "A small utility to scale a source screenshot to acceptable size with nearest-neighbour interpolation.",
-    "authors": [
-        {"name": "AmperSam", "user": 41223}
-    ],
-    "dependencies": []
+    "authors": [{"name": "AmperSam", "user": 41223}]
 }

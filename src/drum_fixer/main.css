@@ -1,0 +1,12 @@
+@import url("https://cdn.jsdelivr.net/npm/water.css@2/out/water.css");
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+input,
+textarea {
+    font-family: "Consolas", "Menlo", "Courier New", Courier, monospace;
+}
