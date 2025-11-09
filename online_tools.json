@@ -1,5 +1,5 @@
 {
-    "commit": "a47d62c",
+    "commit": "main",
     "tools": [
         {
             "id": "bps",
@@ -8,11 +8,11 @@
             "description": "Applies BPS patches.",
             "authors": [
                 {
-                    "name": "Alcaro",
+                    "name": "Sir_Walrus",
                     "user": 1686
                 },
                 {
-                    "name": "randomdude999",
+                    "name": "trillian",
                     "user": 32552
                 },
                 {
@@ -45,7 +45,7 @@
             "id": "drum_fixer",
             "name": "Drum Fixer",
             "game": "smw",
-            "description": "This tool convert each note in MML into labels, which is helpful for dealing with percussion channels.",
+            "description": "This tool converts each note in MML into labels, which is helpful for dealing with percussion channels.",
             "authors": [
                 {
                     "name": "Nanako",

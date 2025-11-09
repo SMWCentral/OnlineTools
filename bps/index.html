@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>BPS Patcher (Flips alternative) - Online Tools - SMW Central</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Alcaro, CircleFriendo, randomdude999, Telinc1">
-    
-</head>
-<body>
-    <div id="tool-bps"><div><label for="file">Base ROM: </label><input type="file" id="rom"></div>
-<div><label for="file">Patch: </label><input type="file" id="patch" accept=".bps"></div>
-<div><button id="button" disabled>Download</button></div></div>
-    
-    <script type="module">
-        import {run} from "../api.js";
-        import tool from "./index.js";
-
-        run("bps", tool);
-    </script>
-    
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><meta charset="UTF-8"><title>BPS Patcher (Flips alternative) - Online Tools - SMW Central</title><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="CircleFriendo, Sir_Walrus, Telinc1, trillian"><div id="tool-bps"><script type="importmap">{
+    "imports": {
+      "@smwcentral/bps": "https://cdn.jsdelivr.net/npm/@smwcentral/bps@1.0.0/dist/index.js"
+    },
+    "integrity": {
+      "https://cdn.jsdelivr.net/npm/@smwcentral/bps@1.0.0/dist/index.js": "sha256-IsjGOcyg/S0twHFzuJ0h7lNz/UhK4ZFJw/KMmH0gt50="
+    }
+  }</script><div><label for="file">Base ROM:</label><input type="file" id="rom"></div><div><label for="file">Patch:</label><input type="file" id="patch" accept=".bps"></div><div><button id="button" disabled="disabled">Download</button></div></div><script type="module">import{run}from"../api.js";import tool from"./index.js";run("bps",tool)</script>
