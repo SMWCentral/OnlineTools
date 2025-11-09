@@ -2,7 +2,5 @@
     "name": "Drum Fixer",
     "game": "smw",
     "description": "This tool converts each note in MML into labels, which is helpful for dealing with percussion channels.",
-    "authors": [
-        {"name": "Nanako", "user": 17572}
-    ]
+    "authors": [{"name": "Nanako", "user": 17572}]
 }

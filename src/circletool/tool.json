@@ -2,8 +2,5 @@
     "name": "Circle Tool (Pendulum)",
     "game": "smw",
     "description": "Circle Tool customizes the trajectory of the [url=https://www.smwcentral.net/?p=section&s=smwsprites&f%5Bname%5D=pendulum]Pendulum[/url] sprites.",
-    "authors": [
-        {"name": "Alcaro", "user": 1686},
-        {"name": "Telinc1", "user": 15661}
-    ]
+    "authors": [{"name": "Alcaro", "user": 1686}, {"name": "Telinc1", "user": 15661}]
 }

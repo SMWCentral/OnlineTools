@@ -1,12 +1,11 @@
-import {execSync} from "child_process";
-import fs from "fs/promises";
-import path from "path";
-
 import Ajv from "ajv";
-import pc from "picocolors";
+import {execSync} from "child_process";
 import escape from "escape-html";
+import fs from "fs/promises";
+import {minify as minifyHTML} from "html-minifier-terser";
+import path from "path";
+import pc from "picocolors";
 import {minify as minifyJS} from "terser";
-import { minify as minifyHTML } from "html-minifier-terser";
 
 import indexHTML from "./indexHTML.mjs";
 import toolHTML from "./toolHTML.mjs";
@@ -16,7 +15,7 @@ const start = Date.now();
 const root = path.dirname(import.meta.dirname);
 
 function logInfo(sourceOrText, maybeText = null) {
-    if(maybeText == null) {
+    if (maybeText == null) {
         const text = sourceOrText;
 
         console.log(text);
@@ -28,23 +27,23 @@ function logInfo(sourceOrText, maybeText = null) {
     }
 }
 
-function logFatal(source, text){
+function logFatal(source, text) {
     console.log(`${pc.bgRed(pc.white(`[${source}]`))} ${text}`);
     process.exit(-1);
 }
 
-async function readFile(...segments){
+async function readFile(...segments) {
     return String(await fs.readFile(path.resolve(root, ...segments)));
 }
 
-async function readJSON(...segments){
+async function readJSON(...segments) {
     return JSON.parse(await readFile(...segments));
 }
 
-async function processJS(...segments){
+async function processJS(...segments) {
     const file = await readFile(...segments);
 
-    if(process.argv.includes("--no-minify")){
+    if (process.argv.includes("--no-minify")) {
         return file;
     }
 
@@ -52,8 +51,8 @@ async function processJS(...segments){
     return result.code;
 }
 
-async function processHTML(html){
-    if(process.argv.includes("--no-minify")){
+async function processHTML(html) {
+    if (process.argv.includes("--no-minify")) {
         return html;
     }
 
@@ -74,94 +73,103 @@ try {
     await fs.access(path.resolve(root, "dist"));
 
     console.log(`${pc.bgYellow(pc.black("[Warning]"))} Found stale dist directory (delete manually for a clean build)`);
-}catch(error){
+} catch (error) {
     // ignore
 }
 
 // Read and process all tools
-const tools = await Promise.all((await fs.readdir(path.resolve(root, "src"), {withFileTypes: true})).filter(
-    (file) => !file.name.startsWith(".") && file.isDirectory()
-).map((file) => file.name).map(async (id) => {
-    logInfo(`Discovered tool ${id}`);
+const tools = await Promise.all(
+    (await fs.readdir(path.resolve(root, "src"), {withFileTypes: true}))
+        .filter((file) => !file.name.startsWith(".") && file.isDirectory())
+        .map((file) => file.name)
+        .map(async (id) => {
+            logInfo(`Discovered tool ${id}`);
 
-    let info;
+            let info;
 
-    try {
-        info = await readJSON("src", id, "tool.json");
-    }catch(error){
-        logFatal(id, `Couldn't read tool.json: ${error.stack}`);
-    }
+            try {
+                info = await readJSON("src", id, "tool.json");
+            } catch (error) {
+                logFatal(id, `Couldn't read tool.json: ${error.stack}`);
+            }
 
-    if(!validate(info)){
-        logFatal(id, `Invalid tool.json: ${JSON.stringify(validate.errors)}`);
-    }
+            if (!validate(info)) {
+                logFatal(id, `Invalid tool.json: ${JSON.stringify(validate.errors)}`);
+            }
 
-    let html;
+            let html;
 
-    try {
-        html = await readFile("src", id, "index.html");
-    }catch(error){
-        if(error.code === "ENOENT"){
-            html = "";
-        }else{
-            logFatal(id, `Couldn't read index.html: ${error.stack}`);
-        }
-    }
+            try {
+                html = await readFile("src", id, "index.html");
+            } catch (error) {
+                if (error.code === "ENOENT") {
+                    html = "";
+                } else {
+                    logFatal(id, `Couldn't read index.html: ${error.stack}`);
+                }
+            }
 
-    let css;
+            let css;
 
-    try {
-        css = await readFile("src", id, "main.css");
-    }catch(error){
-        if(error.code === "ENOENT"){
-            css = "";
-        }else{
-            logFatal(id, `Couldn't read main.css: ${error.stack}`);
-        }
-    }
+            try {
+                css = await readFile("src", id, "main.css");
+            } catch (error) {
+                if (error.code === "ENOENT") {
+                    css = "";
+                } else {
+                    logFatal(id, `Couldn't read main.css: ${error.stack}`);
+                }
+            }
 
-    let script;
+            let script;
 
-    try {
-        script = await processJS("src", id, "index.js");
-    }catch(error){
-        logFatal(id, `Couldn't process index.js: ${error.stack}`);
-    }
+            try {
+                script = await processJS("src", id, "index.js");
+            } catch (error) {
+                logFatal(id, `Couldn't process index.js: ${error.stack}`);
+            }
 
-    let finalHTML = toolHTML({
-        id,
-        name: info.name,
-        authors: info.authors.map((author) => author.name).sort((a, b) => a.localeCompare(b)).join(", "),
-        css: css ? `<style>${css}</style>` : "",
-        html: `<div id="tool-${escape(id)}">${html.trim()}</div>`,
-    }, escape);
+            let finalHTML = toolHTML(
+                {
+                    id,
+                    name: info.name,
+                    authors: info.authors
+                        .map((author) => author.name)
+                        .sort((a, b) => a.localeCompare(b))
+                        .join(", "),
+                    css: css ? `<style>${css}</style>` : "",
+                    html: `<div id="tool-${escape(id)}">${html.trim()}</div>`,
+                },
+                escape,
+            );
 
-    try {
-        finalHTML = await processHTML(finalHTML);
-    }catch(error){
-        logFatal(id, `Couldn't process final index.html: ${error.stack}`);
-    }
+            try {
+                finalHTML = await processHTML(finalHTML);
+            } catch (error) {
+                logFatal(id, `Couldn't process final index.html: ${error.stack}`);
+            }
 
-    try {
-        await fs.mkdir(path.resolve(root, "dist", id), {recursive: true});
+            try {
+                await fs.mkdir(path.resolve(root, "dist", id), {recursive: true});
 
-        await Promise.all([
-            fs.writeFile(path.resolve(root, "dist", id, "index.js"), script),
-            fs.writeFile(path.resolve(root, "dist", id, "index.html"), finalHTML)
-        ]);
+                await Promise.all([
+                    fs.writeFile(path.resolve(root, "dist", id, "index.js"), script),
+                    fs.writeFile(path.resolve(root, "dist", id, "index.html"), finalHTML),
+                ]);
 
-        logInfo(id, "Build successful");
-    }catch(error){
-        logFatal(id, `Couldn't write output: ${error.stack}`);
-    }
+                logInfo(id, "Build successful");
+            } catch (error) {
+                logFatal(id, `Couldn't write output: ${error.stack}`);
+            }
 
-    return {id, info};
-}));
+            return {id, info};
+        }),
+);
 
 // Process API code
 try {
     await fs.writeFile(path.resolve(root, "dist/api.js"), await processJS("src/api.js"));
-}catch(error){
+} catch (error) {
     logFatal("api.js", `Couldn't process API code: ${error.stack}`);
 }
 
@@ -172,10 +180,10 @@ logInfo("Writing indexes");
 
 let commit = "main";
 
-if(String(execSync("git status --porcelain")).length === 0){
+if (String(execSync("git status --porcelain")).length === 0) {
     // Working directory clean - point to last commit
     commit = String(execSync("git rev-parse --short HEAD")).trim();
-}else{
+} else {
     // Uncommitted changes - point to current branch
     commit = String(execSync("git rev-parse --abbrev-ref HEAD")).trim();
 }
@@ -184,22 +192,29 @@ let finalIndexHTML = indexHTML(tools, escape);
 
 try {
     finalIndexHTML = await processHTML(finalIndexHTML);
-}catch(error){
+} catch (error) {
     logFatal(id, `Couldn't process index HTML: ${error.stack}`);
 }
 
 await Promise.all([
-    fs.writeFile(path.resolve(root, "dist", "online_tools.json"), JSON.stringify({
-        commit,
-        tools: tools.map((tool) => ({
-            id: tool.id,
-            name: tool.info.name,
-            game: tool.info.game,
-            description: tool.info.description,
-            authors: tool.info.authors
-        }))
-    }, undefined, "    ")),
-    fs.writeFile(path.resolve(root, "dist", "index.html"), finalIndexHTML)
+    fs.writeFile(
+        path.resolve(root, "dist", "online_tools.json"),
+        JSON.stringify(
+            {
+                commit,
+                tools: tools.map((tool) => ({
+                    id: tool.id,
+                    name: tool.info.name,
+                    game: tool.info.game,
+                    description: tool.info.description,
+                    authors: tool.info.authors,
+                })),
+            },
+            undefined,
+            "    ",
+        ),
+    ),
+    fs.writeFile(path.resolve(root, "dist", "index.html"), finalIndexHTML),
 ]);
 
 logInfo("Success", `Built ${tools.length} tools in ${Date.now() - start} ms`);

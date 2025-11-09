@@ -1,17 +1,17 @@
-function byte(number){
+function byte(number) {
     return `$${BigInt.asUintN(8, number).toString(16).toUpperCase().padStart(2, "0")}`;
 }
 
-function doCircleTool(input, angle){
+function doCircleTool(input, angle) {
     input = input.replace(/[^\r]\n/g, "\r\n");
 
     const tableStart = input.indexOf("HorzSineTable:\r\n");
 
-    if(tableStart === -1){
+    if (tableStart === -1) {
         return {error: "Didn't find HorzSineTable: in the ASM file."};
     }
 
-    if(angle < 0){
+    if (angle < 0) {
         angle = 90 - angle;
     }
 
@@ -20,20 +20,20 @@ function doCircleTool(input, angle){
     const offX = [];
     const offY = [];
 
-    for(let i = 0; i < 256; i++){
-        offX[i] = BigInt(Math.trunc(256 * Math.sin(angle * (Math.PI / 2) * Math.sin(i * Math.PI / 256))));
-        offY[i] = BigInt(Math.trunc(256 * Math.cos(angle * (Math.PI / 2) * Math.sin(i * Math.PI / 256))));
+    for (let i = 0; i < 256; i++) {
+        offX[i] = BigInt(Math.trunc(256 * Math.sin(angle * (Math.PI / 2) * Math.sin((i * Math.PI) / 256))));
+        offY[i] = BigInt(Math.trunc(256 * Math.cos(angle * (Math.PI / 2) * Math.sin((i * Math.PI) / 256))));
     }
 
     const horzSineTable = ["HorzSineTable:\r\n"];
     const vertSineTable = ["VertSineTable:\r\n"];
 
-    for(let x = 0; x < 32; x++){
+    for (let x = 0; x < 32; x++) {
         horzSineTable.push("db ");
         vertSineTable.push("db ");
 
-        for(let y = 0; y < 8; y++){
-            if(y > 0){
+        for (let y = 0; y < 8; y++) {
+            if (y > 0) {
                 horzSineTable.push(",");
                 vertSineTable.push(",");
             }
@@ -50,11 +50,11 @@ function doCircleTool(input, angle){
     }
 
     return {
-        asm: input.slice(0, tableStart).concat(horzSineTable.join("")).concat(vertSineTable.join(""))
+        asm: input.slice(0, tableStart).concat(horzSineTable.join("")).concat(vertSineTable.join("")),
     };
 }
 
-export default function(smwc){
+export default function (smwc) {
     const fileInput = smwc.byID("file");
     const angleInput = smwc.byID("angle");
 
@@ -63,7 +63,7 @@ export default function(smwc){
     generate.addEventListener("click", () => {
         const file = fileInput.files[0];
 
-        if(file == null){
+        if (file == null) {
             return smwc.setStatus({error: "No file specified."});
         }
 
@@ -71,19 +71,22 @@ export default function(smwc){
 
         const angle = Number(angleInput.value);
 
-        file.text().then((input) => {
-            const result = doCircleTool(input, angle);
+        file.text()
+            .then((input) => {
+                const result = doCircleTool(input, angle);
 
-            smwc.setStatus(result);
+                smwc.setStatus(result);
 
-            if(result.asm != null){
-                return smwc.download(file.name, new Blob([result.asm], {type: "text/x-asm"}));
-            }
-        }).catch((error) => {
-            console.log(error);
-            smwc.setStatus({error: "Internal error."});
-        }).finally(() => {
-            generate.disabled = false;
-        });
+                if (result.asm != null) {
+                    return smwc.download(file.name, new Blob([result.asm], {type: "text/x-asm"}));
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                smwc.setStatus({error: "Internal error."});
+            })
+            .finally(() => {
+                generate.disabled = false;
+            });
     });
 }

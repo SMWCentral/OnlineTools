@@ -2,7 +2,5 @@
     "name": "SNES/PC Address Converter",
     "game": "general",
     "description": "Converts between SNES and PC addresses.",
-    "authors": [
-        {"name": "Telinc1", "user": 15661}
-    ]
+    "authors": [{"name": "Telinc1", "user": 15661}]
 }
