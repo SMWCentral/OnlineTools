@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 
 import Ajv from "ajv";
-import chalk from "chalk";
+import pc from "picocolors";
 import escape from "escape-html";
 import {minify as minifyJS} from "terser";
 import { minify as minifyHTML } from "html-minifier-terser";
@@ -15,16 +15,21 @@ const start = Date.now();
 
 const root = path.dirname(import.meta.dirname);
 
-function logInfo(source, text){
-    if(text == null){
-        console.log(source);
-    }else{
-        console.log(chalk`{blue [${source}]} ${text}`);
+function logInfo(sourceOrText, maybeText = null) {
+    if(maybeText == null) {
+        const text = sourceOrText;
+
+        console.log(text);
+    } else {
+        const source = sourceOrText;
+        const text = maybeText;
+
+        console.log(`${pc.blue(`[${source}]`)} ${text}`);
     }
 }
 
 function logFatal(source, text){
-    console.log(chalk`{bgRed.white [${source}]} ${text}`);
+    console.log(`${pc.bgRed(pc.white(`[${source}]`))} ${text}`);
     process.exit(-1);
 }
 
@@ -68,7 +73,7 @@ const validate = new Ajv().compile(await readJSON("scripts", "tool.schema.json")
 try {
     await fs.access(path.resolve(root, "dist"));
 
-    console.log(chalk`{bgYellow.black [Warning]} Found stale dist directory (delete manually for a clean build)`);
+    console.log(`${pc.bgYellow(pc.black("[Warning]"))} Found stale dist directory (delete manually for a clean build)`);
 }catch(error){
     // ignore
 }
